@@ -158,5 +158,5 @@ EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 # Enter your email details below for sending emails
-EMAIL_HOST_USER = 'danielonoja246@zohomail.com'
-EMAIL_HOST_PASSWORD = 'DeeStarks090*'
+EMAIL_HOST_USER = 'enteryouremailaddress'
+EMAIL_HOST_PASSWORD = 'enteryourpassword'

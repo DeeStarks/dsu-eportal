@@ -106,7 +106,7 @@ def allocate_course(request):
                 
     context = {
         'lecturers': staff,
-        'courses': courses,
+        'courses': courses.order_by('course_code'),
         'returned_object': returned_object
     }
     return render(request, "admin_panel/course-allocate.html", context)

@@ -72,7 +72,7 @@ urlpatterns = [
     path("records", portal.records, name="records"),
     path("result", portal.result, name="result"),
     path("start", portal.get_started, name="start"),
-    path("timetable/", include("timetable.urls")),
+    path("admin/tt/", include("timetable.urls")),
     path("table", timetable.timetable, name="table"),
     path("voucher", portal.voucher, name="voucher"),
     path("<str:url>", portal.page404, name="error404"),

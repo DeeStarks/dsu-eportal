@@ -216,7 +216,7 @@
     </div>
 </div>
 
-{% elif request.user.is_superuser or request.user.groups.all.0.name == 'admin' %}
+{% elif request.user.groups.all.0.name == 'admin' %}
 <div class="main_body">
     <div class="body_title">YOUR PROFILE</div>
     <hr>

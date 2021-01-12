@@ -90,6 +90,10 @@ Create Super User `$  python manage.py createsuperuser`, enter username, gmail a
 
 To access the django admin panel, add a trailing url - `/administration/` i.e. `http://127.0.0.1:8000/administration/`
 
+* Navigate to users in the django admin panel
+* Click your username in the users list
+* Add yourself to a group e.g. admin, student, staff (the first group you add yourself to will be the group you belong to and used across all your pages in the main school portal)
+
 *To Login as a student/staff member*
 
 * Navigate to "Add new user" tab and create a new user.

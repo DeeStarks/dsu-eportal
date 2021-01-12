@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    .even_row{
+        background-color: rgba(0, 0, 0, 0.137);
+    }
+</style>
+<div class="main_body courses">
+    <div class="body_title">ALLOCATED COURSES</div>
+    <hr>
+    {% if course.exists %}
+    <section class="pt-5 courses-table">
+        <div id="courses">
+            <div class="tbl-header pr-3">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Course Code</th>
+                            <th>Course Title</th>
+                            <th>Course Units</th>
+                            <th>Grouping</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="tbl-content">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <tbody>
+                        {% for course_item in course %}
+                        <tr class="{% if forloop.counter|divisibleby:2 %}even_row{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ course_item.course.course_code }}</td>
+                            <td>{{ course_item.course.course_title }}</td>
+                            <td>{{ course_item.course.course_unit }}</td>
+                            <td>{{ course_item.course.grouping }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <div style="color: rgba(0, 0, 0, 0.685); font-style: italic; font-weight: 700; width: 100%; text-align: center; font-size: 15px;">No course has been assigned to you</div>
+    {% endif %}
+</div>
+{% endblock %}

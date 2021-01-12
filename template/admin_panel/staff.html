@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    th, td{
+        font-size: 13px;
+    }
+    #overflow{
+        overflow-y: scroll;
+        max-height: 400px;
+    }
+</style>
+<div class="main_body student">
+    <div class="body_title">Lecturers</div>
+    <hr>
+    <div id="overflow">
+        <table cellpadding="0" cellspacing="0" width="100%">
+            <col style="width:5%">
+            <col style="width:13.6%">
+            <col style="width:13.6%">
+            <col style="width:13.6%">
+            <col style="width:13.6%">
+            <col style="width:13.6%">
+            <col style="width:13.6%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="text-center">Username</th>
+                    <th class="text-center">Full Name</th>
+                    <th class="text-center">Phone Number</th>
+                    <th class="text-center">Address</th>
+                    <th class="text-center">Edit Profile</th>
+                    <th class="text-center">Remove lecturer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lecturer in staff %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="text-center">{{ lecturer.username|capfirst }}</td>
+                    <td class="text-center">{{ lecturer.get_full_name|capfirst }}</td>
+                    <td class="text-center">{{ lecturer.userprofile.phone }}</td>
+                    <td>{{ lecturer.userprofile.address }}</td>
+                    <td class="text-center"><a href="{% url 'update profile' lecturer.id lecturer.username %}" class="bg-primary text-light" style="padding: 5px 20px; font-size: 13px;">Edit</a></td>
+                    <td class="text-center"><a href="{% url 'confirm delete user' lecturer.groups.all.0.name lecturer.username %}" class="bg-danger text-light" style="padding: 5px 20px; font-size: 13px;">Remove</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

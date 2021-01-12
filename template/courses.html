@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<div class="main_body courses">
+    <div class="body_title">REGISTERED COURSES</div>
+    <hr>
+    <section class="pt-5 courses-table">
+        <div id="courses">
+            <div class="tbl-header pr-3">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Course Code</th>
+                            <th>Course Title</th>
+                            <th>Course Units</th>
+                            <th>Grouping</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="tbl-content">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>GSP 201</td>
+                            <td>Humanities I</td>
+                            <td>2</td>
+                            <td>General Studies</td>
+                        </tr>
+                        <tr class="even">
+                            <td>2</td>
+                            <td>CSC 201</td>
+                            <td>Computer Programming I</td>
+                            <td>2</td>
+                            <td>Core</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>GSP 201</td>
+                            <td>Humanities I</td>
+                            <td>2</td>
+                            <td>General Studies</td>
+                        </tr>
+                        <tr class="even">
+                            <td>4</td>
+                            <td>CSC 201</td>
+                            <td>Computer Programming I</td>
+                            <td>2</td>
+                            <td>Core</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>GSP 201</td>
+                            <td>Humanities I</td>
+                            <td>2</td>
+                            <td>General Studies</td>
+                        </tr>
+                        <tr class="even">
+                            <td>6</td>
+                            <td>CSC 201</td>
+                            <td>Computer Programming I</td>
+                            <td>2</td>
+                            <td>Core</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>GSP 201</td>
+                            <td>Humanities I</td>
+                            <td>2</td>
+                            <td>General Studies</td>
+                        </tr>
+                        <tr class="even">
+                            <td>8</td>
+                            <td>CSC 201</td>
+                            <td>Computer Programming I</td>
+                            <td>2</td>
+                            <td>Core</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tbl-foot">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td>Total Units: 16</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    .success_title{
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    #success_message{
+        background-color: #178a00;
+        color: #ffffff;
+        font-size: 13px;
+        position: fixed;
+        width: 300px;
+        padding: 10px;
+        top: 100px;
+        right: -500px;
+        z-index: 5;
+    }
+    #success{
+        border-top: 1px solid #ffffff62;
+        padding: 10px 20px;
+    }
+    #close{
+        font-size: 15px;
+        width: 100%;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    #success_message div a{
+        color: rgba(255, 255, 255, 0.63);
+    }
+    th, td{
+        font-size: 13px;
+    }
+    #overflow{
+        overflow-y: scroll;
+        max-height: 400px;
+    }
+    .even_row{
+        background-color: rgba(0, 0, 0, 0.083);
+    }
+    .modal-title{
+        font-weight: 700;
+        font-size: 18px;
+    }
+    .modal_head{
+        background-color: rgb(3, 54, 150);
+    }
+    .btn-close{
+        background-color: transparent !important;
+        outline: 0 !important;
+        border: 0 !important;
+    }
+    .btn-close i{
+        padding: 0 10px;
+        transition: 100ms;
+    }
+    .btn-close i:hover{
+        font-size: 20px;
+    }
+    tbody button, .modal-footer button{
+        font-size: 13px !important;
+        border-radius: 0 !important;
+        padding: 5px 20px !important;
+    }
+    .modal th{
+        color: black !important;
+        font-weight: 700 !important;
+    }
+    .modal_head th{
+        color: white !important;
+    }
+</style>
+
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ message }}</div>
+    <div class="px-3"><a href="{% url 'allocated list' %}">Reload</a> page to view changes!</div>
+</div>
+
+<div class="main_body courses">
+    <div class="body_title">COURSE ALLOCATION LIST</div>
+    <hr>
+    <section class="pt-5 courses-table">
+        <div id="courses">
+            <div class="tbl-header pr-3">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:19%">
+                    <col style="width:19%">
+                    <col style="width:19%">
+                    <col style="width:19%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th class="text-center">Username</th>
+                            <th class="text-center">Full Name</th>
+                            <th class="text-center">Allocated Courses</th>
+                            <th class="text-center">Edit</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="tbl-content">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:19%">
+                    <col style="width:19%">
+                    <col style="width:19%">
+                    <col style="width:19%">
+                    <tbody>
+                        {% for object in staff_objects %}
+                        <tr class="{% if forloop.counter|divisibleby:2 %}even_row{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ object.username }}</td>
+                            <td>{{ object.fullname }}</td>
+                            <td>
+                                {% for course in object.courses %}
+                                    {{ course }}, 
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <button type="button" class="editButton btn btn-primary ripple-surface" data-toggle="modal" data-target="#{{ object.username }}" value="{{ object.username }}" id="editButton">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input name='staff_name' type="text" id="staffName" style="display: none;" value="">
+                    {% for object in staff_objects %}
+                    <div class="modal fade" id="{{ object.username }}" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="modal-title" id="exampleModalLabel">{{ object.fullname|upper }} COURSES</div>
+                                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-hover">
+                                        <col style="width:15%">
+                                        <col style="width:50%">
+                                        <col style="width:35%">
+                                        <thead class="modal_head">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Course</th>
+                                                <th>Remove</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for course in object.courses %}
+                                            <tr class="{% if forloop.counter|divisibleby:2 %}even_row{% endif %}">
+                                                <th scope="row">{{ forloop.counter }}</th>
+                                                <td>{{ course }}</td>
+                                                <td>
+                                                    <input type="checkbox" name="remove_course" id="" value="{{ course }}">
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-primary ripple-surface" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Remove Selected</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    let btn = document.getElementsByClassName('editButton')
+    for(let i=0; i<btn.length; i++){
+        btn[i].onclick = () => {
+            let staffValue = btn[i].getAttribute('value')
+            document.getElementById('staffName').setAttribute("value", staffValue);
+        }
+    }
+
+    // For displaying success message when there is one
+    window.onload = () => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<div class="main_body">
+    <div class="body_title">UPDATE STUDENTS LIBRARY</div>
+    <hr>
+    <div class="card p-2">
+        <div id="accordion">
+            <div class="card">
+                <div class="card-header" id="newsfeed_head">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Add Book <i class="fas fa-chevron-down ml-3"></i>
+                        </button>
+                    </h5>
+                </div>
+            
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="update_news">
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="label_box">
+                                    <label for="thumbnail">Upload Thumbnail</label>
+                                </div>
+                                <hr>
+                                <div id="thumbnail_info">
+                                    <img src="#" alt="" id="thumbnail_preview">
+                                    <div id="thumbnail_name">No thumbnail chosen</div>
+                                </div>
+                                <input type="file" name="thumbnail" id="thumbnail" required>
+
+                                <div class="label_box pt-5">
+                                    <label for="book">Upload File</label>
+                                </div>
+                                <hr>
+                                <div style="border: 2px dashed rgba(0, 0, 0, 0.364); padding: 10px; min-width: 45vw !important; overflow: hidden;">
+                                    <input type="file" name="book" id="book" required style="font-size: 13px; outline: none; border: none;max-width: 43vw !important;">
+                                </div>
+
+                                <input name='title' type="text" placeholder="Enter Book's Title" id="newsfeed_title" class="px-3 py-2 my-4">
+                                <button type="submit">Update Library</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for book in books %}
+            <div class="col-md-3 col-sm-6 p-3">
+                <div class="bg-light" style="box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.281); overflow: hidden;">
+                    <a href="{{ book.file.url }}" target="_blank" download="{{ book.filename }}" style="max-height: 100px; min-height: 100px;">
+                        <img src="{{ book.thumbnail.url }}" alt="" width="100%">
+                    </a>
+                    <hr>
+                    <div style="text-transform: uppercase; color: rgb(26, 26, 26); text-align: center; font-weight: 600;">{{ book.filename }}</div>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <a href="{% url 'remove book' book.id book.filename.split|join:'-'|lower %}" style="background-color: #9d1a1a; display: block; padding: 10px 20px; margin: 30px; color: #ffffff; font-size: 13px;">Remove</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

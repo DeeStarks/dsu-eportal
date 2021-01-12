@@ -1,0 +1,83 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/icon.jpg' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <title>DeeStarks University</title>
+    <style>
+        .login_form_control {
+            background:none;
+            border:none;
+            font-size: 13px;
+            border-bottom:1px solid #0000007c;
+            border-radius:0;
+            box-shadow:none;
+            outline:none;
+            color:inherit;
+            width: 100%;
+            line-height: 40px;
+            padding: 0px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="front_page" id="front_page">
+        <div class="background">
+            <div class="navbar">
+                <a href="{% url 'home' %}" id="brand"><div class="brand">
+                    <div class="logo">D<span>U</span></div>
+                    <div class="brand_text">
+                        <div>
+                            <div>DEESTARKS</div>
+                            <div>UNIVERSITY</div>
+                        </div>
+                    </div>
+                </div></a>
+                <!-- <div class="nav_items02">
+                    <a href="admin-auth" class="out">ADMIN LOG</a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <div class="registration">
+        <div class="login-dark">
+            <form method="POST">
+                {% csrf_token %}
+                <h2 class="sr-only">Login Form</h2>
+                <div class="illustration">
+                    <i class="fas fa-unlock-alt"></i>
+                </div>
+                <div class="form-group">
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    {{ form.password }}
+                </div>
+                <div class="text-danger" style="width: 100%; text-align: center; font-size: 12px; font-weight: 600;">{{ message }}</div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block" type="submit">Log In</button>
+                </div>
+                <a href="{% url 'reset_password' %}" class="forgot">Forgot your password?</a>
+            </form>
+        </div>
+    </div>
+    <script src="{% static 'jq/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        let form_fields = document.getElementsByTagName("input")
+        form_fields[1].placeholder = 'Username/Matric No.'
+        form_fields[2].placeholder = 'Password'
+
+        for (var field in form_fields){	
+			form_fields[field].className += ' login_form_control'
+		}
+    </script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

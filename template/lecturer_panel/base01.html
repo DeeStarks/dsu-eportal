@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/5218.jpg' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <title>DeeStarks University | Lecturer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="front_page" id="front_page">
+        <div class="background">
+            <div class="navbar">
+                <a href="{% url 'lecturer_dashboard' %}" id="brand"><div class="brand">
+                    <div class="logo">D<span>U</span></div>
+                    <div class="brand_text">
+                        <div>
+                            <div>DEESTARKS</div>
+                            <div>UNIVERSITY</div>
+                        </div>
+                    </div>
+                </div></a>
+                <div class="nav_items">
+                    <a href="start">Get Started</a>
+                    <a href="{% url 'logout' %}" class="out">LOG OUT</a>
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <div class="sidebar">
+                <div class="side_in">
+                    <div class="side_profile">
+                        <i class="fas fa-times"></i>
+                        <a href="{% url 'lecturer_profile' %}"><div class="dp d-flex align-items-center justify-content-center"><img src="{% static 'images/default-user.png' %}" alt="" width="100%"></div>
+                        <div class="name profile-name">{{ request.user }}</div></a>
+                    </div>
+                    <div class="sidenav_link">
+                        <div>
+                            <a href="lecturer-dashboard" class="active"><i class="fas fa-newspaper"></i>News Feed</a>
+                            <a href="lecturer-profile"><i class="fas fa-user"></i>Profile</a>
+                            <a href="lecturer-notification"><i class="fas fa-bell"></i>Notification <span>1</span></a>
+                            <a href="lecturer-courses"><i class="fas fa-book"></i>Allocated Courses</a>
+                            <a href="lecturer-scoresheet"><i class="fas fa-file-alt"></i>Upload Scoresheet</a>
+                            <a href="start" class="side_link02"><i class="fas fa-info-circle"></i>Get Started</a>
+                            <a href="{% url 'logout' %}"><i class="fas fa-power-off"></i>Log Out</a>
+                        </div>
+                    </div>
+                    <div class="account">
+                        <a href="https://www.facebook.com/OnojaDaniel246/" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.linkedin.com/in/daniel-onoja-044a611b3/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://api.whatsapp.com/send?phone=2349036471865" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://twitter.com/OnojaDaniel20" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/deestarks.py/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="mailto: danielonoja246@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
+                        <a href="https://github.com/DeeStarks" target="_blank"><i class="fab fa-github"></i></a>
+                        <div class="acct_title">Development by Onoja Daniel</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="open_side">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="side_nav">
+            <div class="side_in">
+                <div class="side_profile">
+                    <i class="fas fa-chevron-left"></i>
+                    <a href="lecturer-profile"><div class="dp d-flex align-items-center justify-content-center"><img src="{% static 'images/default-user.png' %}" alt="" width="100%"></div>
+                    <div class="name profile-name">{{ request.user }}</div></a>
+                </div>
+                <div class="sidenav_link">
+                    <div>
+                        <a href="lecturer-dashboard" class="active"><i class="fas fa-newspaper"></i>News Feed</a>
+                        <a href="lecturer-profile"><i class="fas fa-user"></i>Profile</a>
+                        <a href="lecturer-notification"><i class="fas fa-bell"></i>Notification <span>1</span></a>
+                        <a href="lecturer-courses"><i class="fas fa-book"></i>Allocated Courses</a>
+                        <a href="lecturer-scoresheet"><i class="fas fa-file-alt"></i>Upload Scoresheet</a>
+                    </div>
+                </div>
+                <div class="account">
+                    <a href="https://www.facebook.com/OnojaDaniel246/" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.linkedin.com/in/daniel-onoja-044a611b3/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://api.whatsapp.com/send?phone=2349036471865" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://twitter.com/OnojaDaniel20" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/deestarks.py/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="mailto: danielonoja246@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
+                    <a href="https://github.com/DeeStarks" target="_blank"><i class="fab fa-github"></i></a>
+                    <div class="acct_title">Development by Onoja Daniel</div>
+                </div>
+            </div>
+        </div>
+        {% block page_content %}
+
+        {% endblock %}
+    </div>
+    <script src="{% static 'jq/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

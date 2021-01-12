@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<div class="main_body attendance">
+    <div class="body_title">YOUR 2020/2021 ATTENDANCE - SOPHOMORE (200L)</div>
+    <hr>
+    <div class="row att">
+        <div class="semester01 col-lg-6 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="att_title">1st Semester</div>
+                </div>
+                <div class="col-12">
+                    <canvas id="semester01" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="semester02 col-lg-6 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="att_title">2nd Semester</div>
+                </div>
+                <div class="col-12">
+                    <canvas id="semester02" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="complete_att02 col-lg-8 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="att_title">Complete Attendance</div>
+                </div>
+                <div class="col-12">
+                    <canvas id="complete_att02" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="complete_att01 col-lg-4 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="att_title">Attendance Percentage</div>
+                </div>
+                <div class="col-12">
+                    <canvas id="complete_att01" width="1000" height="1000"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

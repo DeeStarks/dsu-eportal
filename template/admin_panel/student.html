@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    th, td{
+        font-size: 13px;
+    }
+    #overflow{
+        overflow-y: scroll;
+        max-height: 400px;
+    }
+</style>
+<div class="main_body student">
+    <div class="body_title">STUDENTS</div>
+    <hr>
+    <div id="overflow">
+        <table cellpadding="0" cellspacing="0" width="100%">
+            <col style="width:5%">
+            <col style="width:12.9%">
+            <col style="width:12.9%">
+            <col style="width:12.9%">
+            <col style="width:12.9%">
+            <col style="width:12.9%">
+            <col style="width:12.9%">
+            <col style="width:12.9%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="text-center">Matric No.</th>
+                    <th class="text-center">Full Name</th>
+                    <th class="text-center">Level</th>
+                    <th class="text-center">Faculty</th>
+                    <th class="text-center">Department</th>
+                    <th class="text-center">Edit Profile</th>
+                    <th class="text-center">Remove Student</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="text-center">{{ student.username }}</td>
+                    <td class="text-center">{{ student.get_full_name }}</td>
+                    <td class="text-center">{{ student.userprofile.get_level_display }}</td>
+                    <td class="text-center">{{ student.userprofile.get_faculty_display }}</td>
+                    <td class="text-center">{{ student.userprofile.get_department_display }}</td>
+                    <td class="text-center"><a href="{% url 'update profile' student.id student.username %}" class="bg-primary text-light" style="padding: 5px 20px; font-size: 13px;">Edit</a></td>
+                    <td class="text-center"><a href="{% url 'confirm delete user' student.groups.all.0.name student.username %}" class="bg-danger text-light" style="padding: 5px 20px; font-size: 13px;">Remove</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

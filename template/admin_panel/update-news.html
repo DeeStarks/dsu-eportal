@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block page_content %}
+<head>
+<style>
+        .login_form_control {
+            background:none;
+            border:none;
+            font-size: 13px;
+            border-bottom:2px solid #ffffff7c;
+            border-radius:0;
+            box-shadow:none;
+            outline:none;
+            color:white;
+            width: 100%;
+            line-height: 40px;
+            padding: 0px 10px;
+        }
+        .label{
+            color: white;
+            font-size: 13px;
+        }
+        .password_warning{
+            font-size: 13px;
+        }
+        select{
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid #ffffff88;
+            background-color: transparent;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        @media(max-width: 500px){
+            select{
+                width: 100%;
+            }
+        }
+        select option{
+            color: black;
+        }
+        button{
+            color: white;
+            background-color: #00205a;
+            border: 2px solid #ffffff88;
+            outline: none;
+            padding: 10px 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 200ms;
+        }
+        button:hover{
+            background-color: white;
+            color: #00205a;
+        }
+        .success_title{
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        #success_message{
+            background-color: #178a00;
+            color: #ffffff;
+            font-size: 13px;
+            position: fixed;
+            width: 300px;
+            padding: 10px;
+            top: 100px;
+            right: -500px;
+            z-index: 5;
+        }
+        #success{
+            border-top: 1px solid #ffffff62;
+            padding: 10px 20px;
+        }
+        #close{
+            font-size: 15px;
+            width: 100%;
+            line-height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ success }}</div>
+</div>
+
+<div class="main_body">
+    <div class="body_title">UPDATE NEWSFEED</div>
+    <hr>
+    <div class="card p-2">
+        <div id="accordion">
+            <div class="card">
+                <div class="card-header" id="newsfeed_head">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Add Newsfeed <i class="fas fa-chevron-down ml-3"></i>
+                        </button>
+                    </h5>
+                </div>
+            
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="update_news">
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="label_box">
+                                    <label for="thumbnail">Upload Thumbnail</label>
+                                </div>
+                                <hr>
+                                <div id="thumbnail_info">
+                                    <img src="#" alt="" id="thumbnail_preview">
+                                    <div id="thumbnail_name">No thumbnail chosen</div>
+                                </div>
+                                <input type="file" name="thumbnail" id="thumbnail" required>
+                                <input name='title' type="text" placeholder="Enter News Title" id="newsfeed_title" class="px-3 py-2 my-4">
+                                <!-- <textarea class="ckeditor" name="body" id="news_textarea" placeholder="Enter News Content" width=100%></textarea> -->
+                                <textarea cols="10" rows="10" name="body" id="news_textarea" placeholder="Enter News Content" class="px-3 py-2 my-4"></textarea>
+                                <button type="submit">Update Newsfeed</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card my-3 p-3 current_feed">
+        <div class="current_feed_title">
+            <h5>ALL NEWSFEED</h5>
+        </div>
+        <hr>
+        {% for post in all_set %}
+        <div class="row">
+            <div class="col-lg-6 col-sm-12 py-2">
+                <div style="width: 100%; font-size: 13px; color: black; font-weight: 700; text-decoration: underline;" class="mb-2 text-center">{{ post.title|upper }}</div>
+                <div class="text-justify">{{ post.post|truncatechars:200 }}</div>
+            </div>
+            <div class="col-lg-3 col-sm-12 py-2"><a href="{% url 'post page' post.id post.title.split|join:'-'|lower %}">View post</a></div>
+            <div class="col-lg-3 col-sm-12 py-2"><a href="{% url 'confirm delete' post.id %}">Remove</a></div>
+        </div>
+        <hr>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    window.onload = (event) => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
+{% endblock %}

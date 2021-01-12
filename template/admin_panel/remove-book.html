@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block page_content %}
+
+<div class="main_body">
+    <div class="body_title">Remove "{{ book.filename|upper }}"?</div>
+    <hr>
+    <div>
+        <div class="text-center">Are you sure you want to remove this book from library? If removed, it cannot be restored.</div>
+        <br>
+        <div class="row" style="margin: 0 10%;">
+            <div class="d-flex align-items-center justify-content-center col-md-6 col-sm-12">
+                <a href="{% url 'confirm book remove' book.id %}" style="background-color: #9d1a1a; display: block; padding: 10px 20px; margin: 30px; color: #ffffff; font-size: 13px; width: 80%; text-align: center;">Yes, I'm sure</a>
+            </div>
+            <div class="d-flex align-items-center justify-content-center col-md-6 col-sm-12">
+                <a href="{% url 'update library' %}" style="background-color: #d8d8d8; display: block; padding: 10px 20px; margin: 30px; color: black; font-size: 13px; width: 80%; text-align: center;">No, go back</a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

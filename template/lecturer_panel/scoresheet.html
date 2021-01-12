@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<div class="main_body scoresheet">
+    <div class="body_title">Upload Scoresheet</div>
+    <hr>
+    <div class="d-flex justify-content-center w-100 h-50 bg-light p-5">
+        <div class="card">
+            <div id="dropdown">Select Course <i class="fas fa-chevron-down"></i></div>
+            <div id="dropdown_menu">
+                <div>
+                    <a href="{% url 'upload' %}">CSC 102</a>
+                    <a href="{% url 'upload' %}">CSC 112</a>
+                    <a href="{% url 'upload' %}">CSC 122</a>
+                    <a href="{% url 'upload' %}">CSC 132</a>
+                    <a href="{% url 'upload' %}">CSC 134</a>
+                    <a href="{% url 'upload' %}">GES 102</a>
+                    <a href="{% url 'upload' %}">GES 104</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

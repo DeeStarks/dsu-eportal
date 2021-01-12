@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block page_content %}
+<head>
+    <style>
+        .success_title{
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        #success_message{
+            background-color: #178a00;
+            color: #ffffff;
+            font-size: 13px;
+            position: fixed;
+            width: 300px;
+            padding: 10px;
+            top: 100px;
+            right: -500px;
+            z-index: 5;
+        }
+        #success{
+            border-top: 1px solid #ffffff62;
+            padding: 10px 20px;
+        }
+        #close{
+            font-size: 15px;
+            width: 100%;
+            line-height: 20px;
+            cursor: pointer;
+        }
+        .login_form_control {
+            background:none;
+            border:none;
+            font-size: 13px;
+            border-bottom:2px solid #ffffff7c;
+            border-radius:0;
+            box-shadow:none;
+            outline:none;
+            color:white;
+            width: 100%;
+            line-height: 40px;
+            padding: 0px 10px;
+        }
+        .label{
+            color: white;
+            font-size: 13px;
+        }
+        label{
+            display: none;
+        }
+        .password_warning{
+            font-size: 13px;
+        }
+        select{
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid #ffffff88;
+            background-color: transparent;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        @media(max-width: 500px){
+            select{
+                width: 100%;
+            }
+        }
+        select option{
+            color: black;
+        }
+        button{
+            color: white;
+            background-color: #00205a;
+            border: 2px solid #ffffff88;
+            outline: none;
+            padding: 10px 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 200ms;
+        }
+        button:hover{
+            background-color: white;
+            color: #00205a;
+        }
+        #profile_pic_info{
+            display: flex;
+            width: 300px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 10px;
+            border: 2px dashed rgba(0, 0, 0, 0.253);
+        }
+
+        #thumbnail{
+            display: none;
+        }
+
+        #picture_preview{
+            max-width: 200px;
+        }
+
+        #profile_pic_name{
+            width: 100%;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .label_box label{
+            cursor: pointer;
+            line-height: 30px;
+            padding: 0px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            background-color: white;
+            color: rgb(0, 32, 90);
+            border: 2px solid rgb(0, 32, 90);
+            transition: 200ms;
+        }
+
+        .label_box label:hover{
+            background-color: rgb(0, 32, 90);
+            color: white;
+        }
+    </style>
+</head>
+
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ success }}</div>
+</div>
+
+<div class="main_body">
+    <div class="body_title">{{ user.get_full_name|upper }}</div>
+    <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="border: 1px solid #00000052; padding: 50px; border-radius: 5px; background-color: rgb(0, 32, 90);">
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+
+            {% if user.groups.all.0.name == "students" %}
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Matric No: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="username" id="username" value="{{ user.username }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    First Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Last Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Email: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="email" id="email" value="{{ user.email }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Phone No: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="phone" id="phone" value="{{ user.userprofile.phone }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Address: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="address" id="address" value="{{ user.userprofile.address }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Registration No: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="reg_no" id="reg_no" value="{{ user.userprofile.reg_no }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Degree: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="degree" required>
+                        <option {% ifequal user.userprofile.degree 'UNDERGRADUATE' %}selected{% endifequal %} value="UNDERGRADUATE">Undergraduate</option>
+                        <option {% ifequal user.userprofile.degree 'POSTGRADUATE' %}selected{% endifequal %} value="POSTGRADUATE">Postgraduate</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Level: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="level" required>
+                        <option value="FRESHMAN" {% ifequal user.userprofile.level 'FRESHMAN' %}selected{% endifequal %}>Freshman (100)</option>
+                        <option {% ifequal user.userprofile.level 'SOPHOMORE' %}selected{% endifequal %} value="SOPHOMORE">Sophomore (200)</option>
+                        <option {% ifequal user.userprofile.level 'JUNIOR' %}selected{% endifequal %} value="JUNIOR">Junior (300)</option>
+                        <option {% ifequal user.userprofile.level 'SENIOR' %}selected{% endifequal %} value="SENIOR">Senior (400)</option>
+                        <option {% ifequal user.userprofile.level 'M-POSTGRADUATE' %}selected{% endifequal %} value="M-POSTGRADUATE">Postgraduate (M.Sc)</option>
+                        <option {% ifequal user.userprofile.level 'P-POSTGRADUATE' %}selected{% endifequal %} value="P-POSTGRADUATE">Postgraduate (P.Hd)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Faculty: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="faculty" required>
+                        <option {% ifequal user.userprofile.faculty 'SCIENCE' %}selected{% endifequal %} value="SCIENCE">Faculty of Science</option>
+                        <option {% ifequal user.userprofile.faculty 'ART' %}selected{% endifequal %} value="ART">Faculty of Art</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Department: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="department" required>
+                        <option disabled><strong>--------FACULTY OF SCIENCE--------</strong></option>
+                        <option {% ifequal user.userprofile.department 'BIOCHEMISTRY' %}selected{% endifequal %} value="BIOCHEMISTRY">Biochemistry</option>
+                        <option {% ifequal user.userprofile.department 'BOTANY' %}selected{% endifequal %} value="BOTANY">Botany</option>
+                        <option {% ifequal user.userprofile.department 'CHEMISTRY' %}selected{% endifequal %} value="CHEMISTRY">Chemistry</option>
+                        <option {% ifequal user.userprofile.department 'COMPUTER_SCIENCE' %}selected{% endifequal %} value="COMPUTER_SCIENCE">Computer Science</option>
+                        <option {% ifequal user.userprofile.department 'GEOSCIENCE' %}selected{% endifequal %} value="GEOSCIENCE">Geoscience</option>
+                        <option {% ifequal user.userprofile.department 'MATHEMATICS' %}selected{% endifequal %} value="MATHEMATICS">Mathematics</option>
+                        <option {% ifequal user.userprofile.department 'MARINE_SCIENCE' %}selected{% endifequal %} value="MARINE_SCIENCE">Marine Science</option>
+                        <option {% ifequal user.userprofile.department 'MICROBIOLOGY' %}selected{% endifequal %} value="MICROBIOLOGY">Microbiology</option>
+                        <option {% ifequal user.userprofile.department 'ZOOLOGY' %}selected{% endifequal %} value="ZOOLOGY">Zoology</option>
+                        <option {% ifequal user.userprofile.department 'PHYSICS' %}selected{% endifequal %} value="PHYSICS">Physics</option>
+                        <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+                        <option disabled><strong>--------FACULTY OF ART--------</strong></option>
+                        <option {% ifequal user.userprofile.department 'CREATIVE_ART' %}selected{% endifequal %} value="CREATIVE_ART">Creative Art</option>
+                        <option {% ifequal user.userprofile.department 'ENGLISH' %}selected{% endifequal %} value="ENGLISH">English</option>
+                        <option {% ifequal user.userprofile.department 'EUROPEAN_LANGUAGE' %}selected{% endifequal %} value="EUROPEAN_LANGUAGE">European Languages & Integration Studies</option>
+                        <option {% ifequal user.userprofile.department 'HISTORY' %}selected{% endifequal %} value="HISTORY">History & Strategic Studies</option>
+                        <option {% ifequal user.userprofile.department 'LINGUISTICS' %}selected{% endifequal %} value="LINGUISTICS">Linguistics African Asian Studies</option>
+                        <option {% ifequal user.userprofile.department 'PHILOSOPHY' %}selected{% endifequal %} value="PHILOSOPHY">Philosophy</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Profile Image: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Current:
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            {% if user.userprofile.profile_pic.url == '' %}
+                            <div style="font-size: 13px; font-weight: 800;">None</div>
+                            {% else %}
+                            <img src="{{ user.userprofile.profile_pic.url }}" alt="" style="width: 150px; height: auto;">
+                            {% endif %}
+                        </div>
+                        <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px;"></div>
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Change:
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            <input type="file" name="p_pic" id="" style="overflow: hidden;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% elif user.groups.all.0.name == "staff" %}
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Username: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="username" id="username" value="{{ user.username }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    First Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Last Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Email: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="email" id="email" value="{{ user.email }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Phone No: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="phone" id="phone" value="{{ user.userprofile.phone }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Address: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="address" id="address" value="{{ user.userprofile.address }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Profile Image: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Current:
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            {% if user.userprofile.profile_pic.url == '' %}
+                            <div style="font-size: 13px; font-weight: 800;">None</div>
+                            {% else %}
+                            <img src="{{ user.userprofile.profile_pic.url }}" alt="" style="width: 150px; height: auto;">
+                            {% endif %}
+                        </div>
+                        <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px;"></div>
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Change:
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            <input type="file" name="p_pic" id="" style="overflow: hidden;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% elif user.groups.all.0.name == "admin" %}
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Username: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="username" id="username" value="{{ user.username }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    First Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Last Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Email: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="email" id="email" value="{{ user.email }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Phone No: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="phone" id="phone" value="{{ user_profile.phone }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Address: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="address" id="address" value="{{ user_profile.address }}">
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Profile Image: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Current:
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            {% if user.userprofile.profile_pic.url == '' %}
+                            <div style="font-size: 13px; font-weight: 800;">None</div>
+                            {% else %}
+                            <img src="{{ user.userprofile.profile_pic.url }}" alt="" style="width: 150px; height: auto;">
+                            {% endif %}
+                        </div>
+                        <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px;"></div>
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Change:
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            <input type="file" name="p_pic" id="" style="overflow: hidden;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="col-md-9 col-sm-12"></div>
+                <div class="label col-md-3 col-sm-12">
+                    <button type="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    let form_fields = document.getElementsByTagName("input")
+    for (var field in form_fields){	
+        form_fields[field].className += ' login_form_control'
+    }
+
+    window.onload = (event) => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
+{% endblock %}

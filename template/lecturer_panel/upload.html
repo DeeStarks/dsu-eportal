@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<div class="main_body upload_page">
+    <div class="body_title">Upload Scoresheet</div>
+    <hr>
+    <div class="upload">
+        <div class="fileuploader ">
+            <div id="upload-label">
+                <i class="fas fa-cloud-upload-alt cloud_icon"></i>
+                <br>
+                <form action="">
+                    <input type="file" name="upload" id="upload">
+                    <label for="upload" id="click_upload">Click to upload file.</label>
+                    <div class="file_display">
+                        <i class="far fa-file-alt"></i>
+                        <br>
+                        <div></div>
+                    </div>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

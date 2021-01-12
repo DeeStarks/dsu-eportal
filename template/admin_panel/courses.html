@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    th, td{
+        font-size: 13px;
+    }
+    #overflow{
+        overflow-y: scroll;
+        max-height: 400px;
+    }
+    #aTag{
+        display: block;
+        line-height: 40px;
+        max-height: 40px !important;
+        overflow: hidden;
+        width: 40px;
+        text-align: center;
+        color: #00205a;
+        background-color: #00000034;
+        border-radius: 50px;
+        margin: 10px 0;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 200ms;
+    }
+    #plus{
+        width: 40px;
+    }
+    #aSpan{
+        visibility: hidden;
+        font-style: normal;
+    }
+    #aTag:hover{
+        color: #ffffff;
+        background-color: #00205a;
+    }
+</style>
+<div class="main_body student">
+    <div class="body_title">COURSES</div>
+    <hr>
+    <div class="add">
+        <a href="{% url 'add course' %}" id="aTag"><i id="plus" class="fas fa-plus mr-4"></i> <span id="aSpan">Add Course</span></a>
+    </div>
+    <div id="overflow">
+        <table cellpadding="0" cellspacing="0" width="100%">
+            <col style="width:5%">
+            <col style="width:19%">
+            <col style="width:19%">
+            <col style="width:19%">
+            <col style="width:19%">
+            <col style="width:19%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="text-center">Course Code</th>
+                    <th class="text-center">Course Title</th>
+                    <th class="text-center">Course Units</th>
+                    <th class="text-center">Grouping</th>
+                    <th class="text-center">Remove Course</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="text-center">{{ course.course_code }}</td>
+                    <td>{{ course.course_title }}</td>
+                    <td class="text-center">{{ course.course_unit }}</td>
+                    <td class="text-center">{{ course.get_grouping_display }}</td>
+                    <td class="text-center"><a href="{% url 'remove course' course.id %}" class="bg-danger text-light" style="padding: 5px 20px; font-size: 13px;">Remove</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    document.getElementById("aTag").onmouseover = () => {
+        document.getElementById("aTag").style.width = "200px";
+        document.getElementById("plus").style.width = "0";
+        document.getElementById("aSpan").style.visibility = "visible";
+    };
+    document.getElementById("aTag").onmouseout = () => {
+        document.getElementById("aTag").style.width = "40px";
+        document.getElementById("plus").style.width = "40px";
+        document.getElementById("aSpan").style.visibility = "hidden";
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    .success_title{
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    #success_message{
+        color: #ffffff;
+        font-size: 13px;
+        position: fixed;
+        width: 300px;
+        padding: 10px;
+        top: 100px;
+        right: -500px;
+        z-index: 5;
+    }
+    .red{
+        background-color: #8a0500;
+    }
+    .green{
+        background-color: #178a00;
+    }
+    #success{
+        border-top: 1px solid #ffffff62;
+        padding: 10px 20px;
+    }
+    #close{
+        font-size: 15px;
+        width: 100%;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    form{
+        background-color: #00205a;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    input:not(.form-check input) {
+        background:none;
+        border:none;
+        font-size: 13px;
+        border-bottom:2px solid #ffffff7c;
+        border-radius:0;
+        box-shadow:none;
+        outline:none;
+        color:white;
+        line-height: 20px;
+        width: 100%;
+    }
+    .label, label{
+        color: white;
+        font-size: 14px;
+    }
+    select{
+        padding: 10px 20px;
+        border: none;
+        outline: none;
+        border-bottom: 2px solid #ffffff88;
+        background-color: transparent;
+        color: white;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    @media(max-width: 500px){
+        select{
+            width: 100%;
+        }
+    }
+    select option{
+        color: black;
+    }
+    button{
+        color: white;
+        background-color: #00205a;
+        border: 2px solid #ffffff88;
+        outline: none;
+        padding: 10px 30px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 200ms;
+    }
+    button:hover{
+        background-color: white;
+        color: #00205a;
+    }
+</style>
+
+<div id="success_message" class="row {% if returned_object.color ==  'red' %}red{% elif returned_object.color ==  'green' %}green{% endif %}">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            {{ returned_object.success }}
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">
+        <p>{{ returned_object.message }}{% if returned_object.courses != '' %}</p>
+        <p>These courses weren't allocated because they've been allocated to {{ returned_object.lecturer.get_full_name }} before: {{ returned_object.courses }}{% endif %}</p>
+    </div>
+</div>
+
+<div class="main_body">
+    <div class="body_title">COURSE ALLOCATION</div>
+    <hr>
+    <div>
+        <form action="" method="POST" class="row">
+            {% csrf_token %}
+            <br>
+            <hr>
+            <br>
+            <div class="row p-4">
+                <div class="col-12 row m-3">
+                    <div class="col-md-4 col-sm-12 text-light label">
+                        Lecturer's Name:
+                    </div>
+                    <div class="col-md-8 col-sm-12">
+                        <select name="lecturer" id="lecturer" required>
+                            <option selected="selected" disabled>---</option>
+                            {% for lecturer in lecturers %}
+                            <option value="{{ lecturer.username }}">{{ lecturer.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 row m-3">
+                    <div class="col-md-4 col-sm-12 text-light label">
+                        Allocate Course(s):
+                    </div>
+                    <div class="col-md-8 col-sm-12">
+                        {% for course in courses %}
+                        <div class="form-check m-2">
+                            <input name="courses" class="form-check-input" type="checkbox" value="{{ course.course_code }}" id="{{ course.id }}">
+                            <label class="form-check-label" for="{{ course.id }}">{{ course.course_code }} - {{ course.course_title }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="m-4">
+                    <button type="submit">Allocate</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    // For displaying success message when there is one
+    window.onload = () => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
+{% endblock %}

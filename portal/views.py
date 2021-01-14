@@ -10,6 +10,9 @@ from django.contrib.auth.models import User
 from myapp.decorators import user_group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from user_profile.models import UserProfile
+import os
+from pathlib import Path
+import json
 
 @login_required(login_url='authentication')
 def index(request):
@@ -23,6 +26,29 @@ def index(request):
     staff_word_count = num2words(staff_num_count)
     course_num_count = len(courses)
     course_word_count = num2words(course_num_count)
+
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    json_loc = os.path.join(BASE_DIR, 'static/chart.json')
+
+    level_100, level_200, level_300, level_400 = 8, 5, 9, 6
+    total_performance = level_100 + level_200 + level_300 + level_400
+
+    l100_performance_percentage = (100*level_100)/total_performance
+    l200_performance_percentage = (100*level_200)/total_performance
+    l300_performance_percentage = (100*level_300)/total_performance
+    l400_performance_percentage = (100*level_400)/total_performance
+    file_to_json = {
+        "l100_pp": l100_performance_percentage,
+        "l200_pp": l200_performance_percentage,
+        "l300_pp": l300_performance_percentage,
+        "l400_pp": l400_performance_percentage,
+        "level_100": level_100,
+        "level_200": level_200,
+        "level_300": level_300,
+        "level_400": level_400,
+    }
+    with open(json_loc, 'w') as json_file:
+        json_file.write(json.dumps(file_to_json))
 
     context = {
         'objects': reversed(queryset),

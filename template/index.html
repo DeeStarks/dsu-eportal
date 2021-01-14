@@ -89,6 +89,87 @@
         </div>
     </div>
 </div>
+<script>
+    let xmlhttp = new XMLHttpRequest();
+    let jsonData = null
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            jsonData = JSON.parse(this.responseText)
+
+            let admin01 = document.getElementById("adminChart01").getContext('2d');
+            let admin02 = document.getElementById("adminChart02").getContext('2d');
+            
+            let adminChart01 = new Chart(admin01, {
+                type: 'bar',
+                data: {
+                    labels: ['100L', "200L", "300L", "400L"],
+                    datasets: [{
+                        label: 'Rate',
+                        data: [jsonData.level_100, jsonData.level_200, jsonData.level_300, jsonData.level_400],
+                        backgroundColor: '#00205a',
+                        fill: false,
+                        borderColor: '#00205a',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Students Performance on a rate of 1-10'
+                    },
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                beginAtZero: true,
+                                steps: 10,
+                                max: 10
+                            }
+                        }]
+                    }
+                }
+            })
+            
+            let adminChart02 = new Chart(admin02, {
+                type: 'doughnut',
+                data: {
+                    labels: ["100L", "200L", "300L", "400L"],
+                    datasets: [{
+                        label: 'Percentage',
+                        data: [jsonData.l100_pp, jsonData.l200_pp, jsonData.l300_pp, jsonData.l400_pp],
+                        backgroundColor: [
+                            "#00205a",
+                            '#00ff1e',
+                            '#ff6347',
+                            "#ff7b00"
+                        ],
+                        fill: false,
+                        borderColor: 'transparent',
+                        borderWidth: 2,
+                        weight: 2
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Students Performance by Percentage'
+                    }
+                }
+            })
+        }
+    };
+
+    xmlhttp.open("GET", "{% static 'chart.json' %}", true);
+    xmlhttp.send();
+
+    // console.log(JSON.parse(jsonData))
+    
+    // window.onload = function(){
+        
+    // }
+
+</script>
 {% endif %}
 
 {% endblock %}

@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from .models import Course, CourseAllocation
 from django.contrib.auth.decorators import login_required
 from myapp.decorators import user_group
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+from user_profile.models import StudentCourses, UserProfile
 
 # Create your views here.
 @login_required(login_url='authentication')
@@ -10,7 +11,7 @@ from django.contrib.auth.models import User
 def all_courses(request):
     courses = Course.objects.all()
     context = {
-        'courses': courses
+        'courses': courses.order_by('course_code')
     }
     return render(request, "admin_panel/courses.html", context)
 
@@ -18,23 +19,100 @@ def all_courses(request):
 @user_group(allowed_roles=['admin'])
 def add_course(request):
     global add_course_msg
+    returned_object = {
+        "success": '',
+        "color": '',
+        "message": ''
+    }
+    print([course.course_code for course in Course.objects.filter(grouping='CORE').filter(department='COMPUTER_SCIENCE')])
     add_course_msg = ''
+    course_list = []
+    for course in Course.objects.all():
+        course_list.append(course.course_code)
+        
     if request.method == "POST":
         code = request.POST.get("code")
         title = request.POST.get("title")
         unit = request.POST.get("unit")
-        group = None
-        if request.POST.get("group") == "core":
-            group = "CORE"
-        elif request.POST.get("group") == "elect":
-            group = "ELECTIVE"
-        elif request.POST.get("group") == "gns":
-            group = "GENERAL STUDIES"
-        Course.objects.create(course_code=code, course_title=title, course_unit=unit, grouping=group)
-        add_course_msg = 'Course Added!'
+        group = request.POST.get("group")
+        department = request.POST.get("department")
+
+        if code.upper() not in course_list:
+            if department and group == 'CORE':
+                Course.objects.create(course_code=code.upper(), course_title=title, course_unit=unit, grouping=group, department=department)
+
+                returned_object["success"] = "Success"
+                returned_object["color"] = "green"
+                returned_object["message"] = "Course added!"
+                
+                # Add new course to related students' courses
+                all_students = Group.objects.get(name='students').user_set.all()
+                for student in all_students:
+                    student_user_info = UserProfile.objects.get(user=student)
+                    student_profile = StudentCourses.objects.filter(user=student)
+                    student_courses = [object.courses.course_code for object in student_profile]
+
+
+                    core_courses = Course.objects.filter(grouping='CORE').filter(department=department)
+                    general_courses = Course.objects.filter(grouping="GENERAL STUDIES")
+
+                    for course in core_courses:
+                        if course.course_code not in student_courses and student_user_info.department == department:
+                            StudentCourses.objects.create(
+                                user=student,
+                                courses=course
+                            )
+                        
+                    for course in general_courses:
+                        if course.course_code not in student_courses:
+                            StudentCourses.objects.create(
+                                user=student,
+                                courses=course
+                            )
+
+            elif group == 'CORE' and not department:
+                returned_object["success"] = "Failed!"
+                returned_object["color"] = "red"
+                returned_object["message"] = "You selected 'CORE' but didn't select a department!"
+            else:
+                Course.objects.create(course_code=code.upper(), course_title=title, course_unit=unit, grouping=group)
+
+                returned_object["success"] = "Success"
+                returned_object["color"] = "green"
+                returned_object["message"] = "Course added!"
+                
+                # Add new course to related students' courses
+                all_students = Group.objects.get(name='students').user_set.all()
+                for student in all_students:
+                    student_user_info = UserProfile.objects.get(user=student)
+                    student_profile = StudentCourses.objects.filter(user=student)
+                    student_courses = [object.courses.course_code for object in student_profile]
+
+
+                    core_courses = Course.objects.filter(grouping='CORE').filter(department=department)
+                    general_courses = Course.objects.filter(grouping="GENERAL STUDIES")
+
+                    for course in core_courses:
+                        if course.course_code not in student_courses and student_user_info.department == department:
+                            StudentCourses.objects.create(
+                                user=student,
+                                courses=course
+                            )
+                        
+                    for course in general_courses:
+                        if course.course_code not in student_courses:
+                            StudentCourses.objects.create(
+                                user=student,
+                                courses=course
+                            )
+        else:
+            returned_object["success"] = "Failed!"
+            returned_object["color"] = "red"
+            returned_object["message"] = "Course already exists"
+
 
     context = {
-        'success': add_course_msg
+        'info_object': returned_object
     }
     return render(request, "admin_panel/add_course.html", context)
 
@@ -63,7 +141,8 @@ def allocate_course(request):
         'message': '',
         'courses': '',
         'color': None,
-        'lecturer': ''
+        'lecturer': '',
+        'course_count': 0
     }
     if request.method == "POST":
         lecturer = request.POST.get('lecturer')
@@ -74,7 +153,7 @@ def allocate_course(request):
         course_added = []
         if lecturer == None:
             returned_object['success'] = 'Failed!'
-            returned_object['message'] = 'Please select a lecturer to allocate courses. '
+            returned_object['message'] = 'Please select a lecturer to allocate course(s). '
             returned_object['color'] = 'red'
         elif len(selected__courses) == 0:
             returned_object['success'] = 'Failed!'
@@ -85,24 +164,25 @@ def allocate_course(request):
                 if each_course not in course_added:
                     lecturer__selected = User.objects.get(username=lecturer)
                     course__selected = Course.objects.filter(course_code=each_course)[0]
-                    staff_objects = CourseAllocation.objects.filter(staff_name=lecturer__selected)
-                    staff_course__list = []
-                    for object_item in staff_objects:
-                        staff_course__list.append(object_item.course.course_code)
+                    course_objects = CourseAllocation.objects.all()
+                    course_objects__list = []
+                    for course_object in course_objects:
+                        course_objects__list.append(course_object.course.course_code)
 
-                    if each_course not in staff_course__list:
+                    if each_course not in course_objects__list:
                         CourseAllocation.objects.create(
                             staff_name=lecturer__selected,
                             course=course__selected
                         )
                         returned_object['success'] = 'Success!'
                         returned_object['color'] = 'green'
-                        returned_object['message'] = f'Course allocated for {lecturer__selected.get_full_name()}. '
+                        returned_object['message'] = f'Course(s) allocated to {lecturer__selected.get_full_name()}. '
                         course_added.append(each_course)
                     else:
                         returned_object['success'] = 'Success!'
                         returned_object['color'] = 'green'
                         returned_object['courses'] += f"{each_course}, "
+                        returned_object['course_count'] += 1
                 
     context = {
         'lecturers': staff,
@@ -167,3 +247,42 @@ def allocated_course(request):
         'course': course_allocated
     }
     return render(request, "lecturer_panel/courses.html", context)
+    
+@login_required(login_url='authentication')
+@user_group(allowed_roles=['students'])
+def courses(request):
+    level = UserProfile.objects.get(user=request.user).level
+
+    student_course_objects = StudentCourses.objects.filter(user=request.user)
+
+    user_courses = []
+
+    if level == 'FRESHMAN':
+        for course in student_course_objects:
+            for num in range(100, 200):
+                if str(num) in course.courses.course_code:
+                    user_courses.append(course)
+    elif level == 'SOPHOMORE':
+        for course in student_course_objects:
+            for num in range(200, 300):
+                if str(num) in course.courses.course_code:
+                    user_courses.append(course)
+    elif level == 'JUNIOR':
+        for course in student_course_objects:
+            for num in range(300, 400):
+                if str(num) in course.courses.course_code:
+                    user_courses.append(course)
+    elif level == 'SENIOR':
+        for course in student_course_objects:
+            for num in range(400, 500):
+                if str(num) in course.courses.course_code:
+                    user_courses.append(course)
+
+    total_unit = 0
+    for course in user_courses:
+        total_unit+=int(course.courses.course_unit)
+    context = {
+        'user_courses': user_courses,
+        'total_unit': total_unit
+    }
+    return render(request, "courses.html", context)

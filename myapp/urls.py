@@ -24,6 +24,7 @@ import post_creation.views as post
 import library.views as library
 import authentication.views as authentication
 import courses.views as courses
+import assessment.views as assessment
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -65,8 +66,11 @@ urlpatterns = [
     path("library", library.library, name="library"),
     path("admin/user/add", authentication.create_user, name="register"),
     path("logout", authentication.logout_user, name="logout"),
-
-    path("courses", portal.courses, name="courses"),
+    path("admin/sm/mastersheet", assessment.mastersheet, name="mastersheet"),
+    path("staff/scoresheet", assessment.scoresheet, name="scoresheet"),
+    path("staff/scoresheet/upload/<str:course>", assessment.scoresheet_upload, name="scoresheet upload"),
+    path("courses", courses.courses, name="courses"),
+    
     path("attendance", portal.attendance, name="attendance"),
     path("notification", portal.notification, name="notification"),
     path("records", portal.records, name="records"),
@@ -76,6 +80,4 @@ urlpatterns = [
     path("table", timetable.timetable, name="table"),
     path("voucher", portal.voucher, name="voucher"),
     path("<str:url>", portal.page404, name="error404"),
-    path("scoresheet", portal.lecturer_scoresheet, name="scoresheet"),
-    path("scoresheet/upload", portal.lecturer_upload, name="upload"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

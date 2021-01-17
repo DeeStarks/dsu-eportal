@@ -9,7 +9,6 @@
         text-transform: uppercase;
     }
     #success_message{
-        background-color: #178a00;
         color: #ffffff;
         font-size: 13px;
         position: fixed;
@@ -18,6 +17,12 @@
         top: 100px;
         right: -500px;
         z-index: 5;
+    }
+    .red{
+        background-color: #8a0500;
+    }
+    .green{
+        background-color: #178a00;
     }
     #success{
         border-top: 1px solid #ffffff62;
@@ -83,17 +88,17 @@
         color: #00205a;
     }
 </style>
-<div id="success_message" class="row">
+<div id="success_message" class="row {% if info_object.color == 'red' %}red{% elif info_object.color == 'green' %}green{% endif %}">
     <div class="col-12 row">
         <div class="col-10 success_title">
-            Success
+            {{ info_object.success }}
         </div>
         <div class="col-2 text-right" id="close">
             <i class="fas fa-times"></i>
         </div>
     </div>
     <hr>
-    <div class="col-12" id="success">{{ success }}</div>
+    <div class="col-12" id="success">{{ info_object.message }}</div>
 </div>
 <div class="main_body">
     <div class="body_title">ADD NEW COURSE</div>
@@ -137,13 +142,49 @@
                     <div class="col-md-8 col-sm-12">
                         <select name="group" id="group" required>
                             <option selected="selected" disabled>---</option>
-                            <option value="core">Core</option>
-                            <option value="elect">Elective</option>
-                            <option value="gns">General Studies</option>
+                            <option value="CORE">Core</option>
+                            <option value="ELECTIVE">Elective</option>
+                            <option value="GENERAL STUDIES">General Studies</option>
                         </select>
                     </div>
                 </div>
-                <button type="submit">Add</button>
+
+                <div style="width: 100%; border: .2px solid #ffffff10; margin: 15px 0;"></div>
+
+                <div style="font-style: italic; font-weight: 600; font-size: 13px; color: rgb(255, 37, 13);">If you selected course group above to be core, select department below to which it is core.</div>
+
+                <div class="col-md-6 col-sm-12 row p-3 mb-5">
+                    <div class="col-md-4 col-sm-12">
+                         <label for="department">Department:</label> 
+                    </div>
+                    <div class="col-md-8 col-sm-12">
+                        <select name="department" id="department">
+                            <option disabled selected>---</option>
+                            <option disabled><strong>--------FACULTY OF SCIENCE--------</strong></option>
+                            <option value="BIOCHEMISTRY">Biochemistry</option>
+                            <option value="BOTANY">Botany</option>
+                            <option value="CHEMISTRY">Chemistry</option>
+                            <option value="COMPUTER_SCIENCE">Computer Science</option>
+                            <option value="GEOSCIENCE">Geoscience</option>
+                            <option value="MATHEMATICS">Mathematics</option>
+                            <option value="MARINE_SCIENCE">Marine Science</option>
+                            <option value="MICROBIOLOGY">Microbiology</option>
+                            <option value="ZOOLOGY">Zoology</option>
+                            <option value="PHYSICS">Physics</option>
+                            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+                            <option disabled><strong>--------FACULTY OF ART--------</strong></option>
+                            <option value="CREATIVE_ART">Creative Art</option>
+                            <option value="ENGLISH">English</option>
+                            <option value="EUROPEAN_LANGUAGE">European Languages & Integration Studies</option>
+                            <option value="HISTORY">History & Strategic Studies</option>
+                            <option value="LINGUISTICS">Linguistics African Asian Studies</option>
+                            <option value="PHILOSOPHY">Philosophy</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button type="submit">Add</button>
+                </div>
             </div>
         </form>
     </div>

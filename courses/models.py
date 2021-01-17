@@ -14,6 +14,7 @@ class Course(models.Model):
     course_title = models.CharField(max_length=150, null=True, blank=True)
     course_unit = models.CharField(max_length=150, null=True, blank=True)
     grouping = models.CharField(max_length=100, choices=GROUPING, default=None)
+    department = models.CharField(max_length=150, null=True, blank=True)
 
 class CourseAllocation(models.Model):
     

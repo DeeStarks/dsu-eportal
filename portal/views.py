@@ -13,6 +13,7 @@ from user_profile.models import UserProfile
 import os
 from pathlib import Path
 import json
+import pandas as pd
 
 @login_required(login_url='authentication')
 def index(request):
@@ -28,15 +29,37 @@ def index(request):
     course_word_count = num2words(course_num_count)
 
     BASE_DIR = Path(__file__).resolve().parent.parent
-    json_loc = os.path.join(BASE_DIR, 'static/chart.json')
+    json_loc = os.path.join(BASE_DIR, 'static/admin_chart.json')
+
+    for p in os.listdir(os.path.join(BASE_DIR, 'media')):
+        print(p)
 
     level_100, level_200, level_300, level_400 = 8, 5, 9, 6
     total_performance = level_100 + level_200 + level_300 + level_400
 
-    l100_performance_percentage = (100*level_100)/total_performance
-    l200_performance_percentage = (100*level_200)/total_performance
-    l300_performance_percentage = (100*level_300)/total_performance
-    l400_performance_percentage = (100*level_400)/total_performance
+    l100_performance_percentage, l200_performance_percentage, l300_performance_percentage, l400_performance_percentage = None, None, None, None
+
+    if level_100 == 0:
+        l100_performance_percentage = 50
+    else:
+        l100_performance_percentage = int(round((level_100/total_performance)*100))
+
+    if level_200 == 0:
+        l200_performance_percentage = 50
+    else:
+        l200_performance_percentage = int(round((level_200/total_performance)*100))
+
+    if level_300 == 0:
+        l300_performance_percentage = 50
+    else:
+        l300_performance_percentage = int(round((level_300/total_performance)*100))
+
+    if level_400 == 0:
+        l400_performance_percentage = 50
+    else:
+        l400_performance_percentage = int(round((level_400/total_performance)*100))
+
+
     file_to_json = {
         "l100_pp": l100_performance_percentage,
         "l200_pp": l200_performance_percentage,
@@ -47,6 +70,7 @@ def index(request):
         "level_300": level_300,
         "level_400": level_400,
     }
+
     with open(json_loc, 'w') as json_file:
         json_file.write(json.dumps(file_to_json))
 
@@ -61,10 +85,6 @@ def index(request):
     }
     return render(request, "index.html", context)
 
-@login_required(login_url='authentication')
-@user_group(allowed_roles=['students'])
-def courses(request):
-    return render(request, "courses.html")
 
 @login_required(login_url='authentication')
 @user_group(allowed_roles=['students'])
@@ -84,7 +104,12 @@ def records(request):
 @login_required(login_url='authentication')
 @user_group(allowed_roles=['students'])
 def result(request):
-    return render(request, "result.html")
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    
+    context = {
+        
+    }
+    return render(request, "result.html", context)
 
 @login_required(login_url='authentication')
 def get_started(request):
@@ -146,17 +171,3 @@ def redirect_user(request, user_id):
         return redirect('staff')
     elif user.groups.filter(name='students'):
         return redirect('students')
-
-# Lecturer Panel
-
-@login_required(login_url='authentication')
-def lecturer_courses(request):
-    return render(request, "lecturer_panel/courses.html")
-
-@login_required(login_url='authentication')
-def lecturer_scoresheet(request):
-    return render(request, "lecturer_panel/scoresheet.html")
-
-@login_required(login_url='authentication')
-def lecturer_upload(request):
-    return render(request, "lecturer_panel/upload.html")

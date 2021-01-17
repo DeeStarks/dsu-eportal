@@ -119,6 +119,9 @@
                     <col style="width:19%">
                     <col style="width:19%">
                     <tbody>
+                        {% if not staff_objects %}
+                        <div style="width: 100%; text-align: center; font-size: 13px; font-weight: 700; padding: 20px; font-style: italic;">No lecturer have been assigned courses.</div>
+                        {% else %}
                         {% for object in staff_objects %}
                         <tr class="{% if forloop.counter|divisibleby:2 %}even_row{% endif %}">
                             <td>{{ forloop.counter }}</td>
@@ -136,6 +139,7 @@
                             </td>
                         </tr>
                         {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
                 <form action="" method="POST">

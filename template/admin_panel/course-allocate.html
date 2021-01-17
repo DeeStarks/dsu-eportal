@@ -23,6 +23,9 @@
     .green{
         background-color: #178a00;
     }
+    .yellow{
+        background-color: #a59200;
+    }
     #success{
         border-top: 1px solid #ffffff62;
         padding: 10px 20px;
@@ -88,10 +91,10 @@
     }
 </style>
 
-<div id="success_message" class="row {% if returned_object.color ==  'red' %}red{% elif returned_object.color ==  'green' %}green{% endif %}">
+<div id="success_message" class="row {% if returned_object.color ==  'red' %}red{% elif returned_object.courses != '' %}yellow{% elif returned_object.color ==  'green' %}green{% endif %}">
     <div class="col-12 row">
         <div class="col-10 success_title">
-            {{ returned_object.success }}
+            {% if returned_object.courses != '' %}Inconclusive!{% else %}{{ returned_object.success }}{% endif %}
         </div>
         <div class="col-2 text-right" id="close">
             <i class="fas fa-times"></i>
@@ -99,8 +102,16 @@
     </div>
     <hr>
     <div class="col-12" id="success">
-        <p>{{ returned_object.message }}{% if returned_object.courses != '' %}</p>
-        <p>These courses weren't allocated because they've been allocated to {{ returned_object.lecturer.get_full_name }} before: {{ returned_object.courses }}{% endif %}</p>
+        <p>{{ returned_object.message }}</p>
+        <p>
+        {% if returned_object.courses != '' %}
+            {% if returned_object.course_count > 1 %}
+                {{ returned_object.courses }} weren't allocated to {{ returned_object.lecturer.get_full_name }} because they've already been allocated.
+            {% elif returned_object.course_count == 1 %}
+                {{ returned_object.courses }} wasn't allocated to {{ returned_object.lecturer.get_full_name }} because it has already been allocated.
+            {% endif %}
+        {% endif %}
+        </p>
     </div>
 </div>
 

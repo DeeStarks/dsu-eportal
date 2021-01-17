@@ -10,13 +10,13 @@
             <div id="dropdown">Select Course <i class="fas fa-chevron-down"></i></div>
             <div id="dropdown_menu">
                 <div>
-                    <a href="{% url 'upload' %}">CSC 102</a>
-                    <a href="{% url 'upload' %}">CSC 112</a>
-                    <a href="{% url 'upload' %}">CSC 122</a>
-                    <a href="{% url 'upload' %}">CSC 132</a>
-                    <a href="{% url 'upload' %}">CSC 134</a>
-                    <a href="{% url 'upload' %}">GES 102</a>
-                    <a href="{% url 'upload' %}">GES 104</a>
+                    {% if courses.exists %}
+                        {% for object in courses %}
+                            <a href="{% url 'scoresheet upload' object.course.course_code %}">{{ object.course.course_code }}</a>
+                        {% endfor %}
+                    {% else %}
+                        <div style="color: white; font-size: 13px; font-style: italic; margin: 10px; text-align: center; font-weight: 600;">You've not been assigned any course.</div>
+                    {% endif %}
                 </div>
             </div>
         </div>

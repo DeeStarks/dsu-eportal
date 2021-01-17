@@ -107,16 +107,25 @@
                     datasets: [{
                         label: 'Rate',
                         data: [jsonData.level_100, jsonData.level_200, jsonData.level_300, jsonData.level_400],
-                        backgroundColor: '#00205a',
-                        fill: false,
-                        borderColor: '#00205a',
+                        backgroundColor: [
+                            "#00205a30",
+                            '#00ff1e30',
+                            '#ff634730',
+                            "#ff7b0030"
+                        ],
                         borderWidth: 1,
+                        borderColor: [
+                            "#00205a",
+                            '#00ff1e',
+                            '#ff6347',
+                            "#ff7b00"
+                        ]
                     }]
                 },
                 options: {
                     title: {
                         display: true,
-                        text: 'Students Performance on a rate of 1-10'
+                        text: 'Students Performance on a Scale of 1-10',
                     },
                     scales: {
                         yAxes: [{
@@ -144,10 +153,8 @@
                             '#ff6347',
                             "#ff7b00"
                         ],
+                        hoverOffset: 4,
                         fill: false,
-                        borderColor: 'transparent',
-                        borderWidth: 2,
-                        weight: 2
                     }]
                 },
                 options: {
@@ -160,7 +167,7 @@
         }
     };
 
-    xmlhttp.open("GET", "{% static 'chart.json' %}", true);
+    xmlhttp.open("GET", "{% static 'admin_chart.json' %}", true);
     xmlhttp.send();
 
     // console.log(JSON.parse(jsonData))

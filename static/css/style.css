@@ -345,7 +345,7 @@ body{
 }
 
 .side_in .sidenav_link::-webkit-scrollbar{
-    width: 5px;
+    width: 8px;
     z-index: 7 !important;
 }
 
@@ -1181,7 +1181,7 @@ body{
 
 .fileuploader{
     width: 50%;
-    background-color: #0064b7;
+    background-color: #00205aee;
     padding: 30px 30px 0 30px;
     text-align: center;
     margin-left: auto;
@@ -1198,7 +1198,7 @@ body{
 .fileuploader .cloud_icon{
     font-size: 50px;
     background: white;
-    color: #0064b7;
+    color: #00205aee;
     border-radius: 100%;
     width: 100px;
     line-height: 100px;

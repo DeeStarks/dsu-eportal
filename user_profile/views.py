@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from myapp.decorators import user_group
 from django.contrib.auth.models import User
-from .models import UserProfile
+from .models import UserProfile, StudentCourses
 from PIL import Image
+from courses.models import Course
 
 # Create your views here.
 
@@ -25,6 +26,8 @@ def profile(request, group, user_id, *args, **kwargs):
 @user_group(allowed_roles=['admin',])
 def update_profile(request, user_id, user_name):
     user = User.objects.get(id=user_id)
+    course_set = Course.objects.all()
+    user_course_object = StudentCourses.objects.filter(user=user)
     success = ''
     if request.method == 'POST':
         if user.groups.filter(name='students'):
@@ -39,6 +42,7 @@ def update_profile(request, user_id, user_name):
             level = request.POST['level']
             faculty = request.POST['faculty']
             department = request.POST['department']
+            courses = request.POST.getlist('courses')
             if request.FILES:
                 p_pic = request.FILES['p_pic']
             else:
@@ -51,6 +55,39 @@ def update_profile(request, user_id, user_name):
             user.email = email
             user.save()
 
+
+            # Handling students courses
+            student_profile = StudentCourses.objects.filter(user=user)
+            student_courses = [object.courses.course_code for object in student_profile]
+
+
+            core_courses = Course.objects.filter(grouping='CORE').filter(department=department)
+            general_courses = Course.objects.filter(grouping="GENERAL STUDIES")
+
+            for course in core_courses:
+                if course.course_code not in student_courses:
+                    StudentCourses.objects.create(
+                        user=user,
+                        courses=course
+                    )
+                
+            for course in general_courses:
+                if course.course_code not in student_courses:
+                    StudentCourses.objects.create(
+                        user=user,
+                        courses=course
+                    )
+
+            if len(courses) >= 1:
+                for course in courses:
+                    course_object = Course.objects.get(course_code=course)
+                    if course not in student_courses:
+                        StudentCourses.objects.create(
+                            user=user,
+                            courses=course_object
+                        )
+
+            # Updating student's profile
             try:
                 UserProfile.objects.create(
                     user=user,
@@ -150,6 +187,9 @@ def update_profile(request, user_id, user_name):
 
     context = {
         'user': user,
-        'success': success
+        'user_object': user_course_object,
+        'user_course_list': [object.courses.course_code for object in user_course_object],
+        'success': success,
+        'elective_courses': Course.objects.filter(grouping='ELECTIVE')
     }
     return render(request, 'admin_panel/profile-edit.html', context)

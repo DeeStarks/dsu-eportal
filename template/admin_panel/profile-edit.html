@@ -43,11 +43,23 @@
             line-height: 40px;
             padding: 0px 10px;
         }
+        .form-check input{
+            background:none;
+            border:none;
+            font-size: 13px;
+            border-bottom:2px solid #ffffff7c;
+            border-radius:0;
+            box-shadow:none;
+            outline:none;
+            color:white;
+            width: 30px !important;
+            line-height: 40px;
+        }
         .label{
             color: white;
             font-size: 13px;
         }
-        label{
+        label:not(.form-check label){
             display: none;
         }
         .password_warning{
@@ -284,6 +296,48 @@
             <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
             <div class="form-group row">
                 <div class="label col-md-3 col-sm-12">
+                    Courses: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            All Registered Course(s):
+                        </div>
+                        <div class="col-md-9 col-sm-12" style="color: #fff; font-size: 13px;">
+                        {% if user_object.exists %}
+                            {% for object in user_object %}
+                                {{ object.courses.course_code }}, 
+                            {% endfor %}
+                        {% else %}
+                            <div style="font-style: italic; color: rgb(252, 118, 114);">
+                                {{ user.get_full_name }} has no registered courses.
+                            </div>
+                        {% endif %}
+                        </div>
+                        <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px;"></div>
+                        <div class="col-md-3 col-sm-12" style="color: #fff; font-size: 13px;">
+                            Add New Elective Course(s):
+                        </div>
+                        <div class="col-md-9 col-sm-12" style="color: #fff; font-size: 13px;">
+                            {% for course in elective_courses %}
+                            {% if course.course_code not in user_course_list %}
+                            <div class="form-check m-2 row">
+                                <div class="col-4">
+                                    <input name="courses" class="form-check-input" type="checkbox" value="{{ course.course_code }}" id="{{ course.id }}">
+                                </div>
+                                <div class="col-8 ml-3">
+                                    <label class="form-check-label" for="{{ course.id }}">{{ course.course_code }} - {{ course.course_title }}</label>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
                     Profile Image: 
                 </div>
                 <div class="col-md-9 col-sm-12">
@@ -293,7 +347,7 @@
                         </div>
                         <div class="col-md-9 col-sm-12">
                             {% if user.userprofile.profile_pic.url == '' %}
-                            <div style="font-size: 13px; font-weight: 800;">None</div>
+                            <div style="font-size: 13px; font-weight: 800; color: white;">None</div>
                             {% else %}
                             <img src="{{ user.userprofile.profile_pic.url }}" alt="" style="width: 150px; height: auto;">
                             {% endif %}
@@ -375,7 +429,7 @@
                         </div>
                         <div class="col-md-9 col-sm-12">
                             {% if user.userprofile.profile_pic.url == '' %}
-                            <div style="font-size: 13px; font-weight: 800;">None</div>
+                            <div style="font-size: 13px; font-weight: 800; color: white;">None</div>
                             {% else %}
                             <img src="{{ user.userprofile.profile_pic.url }}" alt="" style="width: 150px; height: auto;">
                             {% endif %}
@@ -457,7 +511,7 @@
                         </div>
                         <div class="col-md-9 col-sm-12">
                             {% if user.userprofile.profile_pic.url == '' %}
-                            <div style="font-size: 13px; font-weight: 800;">None</div>
+                            <div style="font-size: 13px; font-weight: 800; color: white;">None</div>
                             {% else %}
                             <img src="{{ user.userprofile.profile_pic.url }}" alt="" style="width: 150px; height: auto;">
                             {% endif %}

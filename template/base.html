@@ -123,7 +123,7 @@
                             <a href="{% url 'profile' request.user.groups.all.0.name request.user.id request.user|lower %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}"><i class="fas fa-user"></i>Profile</a>
                             <a href="{% url 'notification' %}" class="{% if request.resolver_match.url_name == 'notification' %}active{% endif %}"><i class="fas fa-bell"></i>Notification <span>1</span></a>
                             <a href="{% url 'allocated courses' %}" class="{% if request.resolver_match.url_name == 'allocated courses' %}active{% endif %}"><i class="fas fa-book"></i>Allocated Courses</a>
-                            <a href="{% url 'scoresheet' %}" class="{% if request.resolver_match.url_name == 'scoresheet' or request.resolver_match.url_name == 'upload' %}active{% endif %}"><i class="fas fa-file-alt"></i>Upload Scoresheet</a>
+                            <a href="{% url 'scoresheet' %}" class="{% if request.resolver_match.url_name == 'scoresheet' or request.resolver_match.url_name == 'scoresheet upload' %}active{% endif %}"><i class="fas fa-file-alt"></i>Upload Scoresheet</a>
                             <a href="start" class="side_link02"><i class="fas fa-info-circle"></i>Get Started</a>
                             <a href="{% url 'logout' %}"><i class="fas fa-power-off"></i>Log Out</a>
                         </div>
@@ -159,7 +159,7 @@
                         <a href="{% url 'profile' request.user.groups.all.0.name request.user.id request.user|lower %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}"><i class="fas fa-user"></i>Profile</a>
                         <a href="{% url 'notification' %}" class="{% if request.resolver_match.url_name == 'notification' %}active{% endif %}"><i class="fas fa-bell"></i>Notification <span>1</span></a>
                         <a href="{% url 'allocated courses' %}" class="{% if request.resolver_match.url_name == 'allocated courses' %}active{% endif %}"><i class="fas fa-book"></i>Allocated Courses</a>
-                        <a href="{% url 'scoresheet' %}" class="{% if request.resolver_match.url_name == 'scoresheet' or request.resolver_match.url_name == 'upload' %}active{% endif %}"><i class="fas fa-file-alt"></i>Upload Scoresheet</a>
+                        <a href="{% url 'scoresheet' %}" class="{% if request.resolver_match.url_name == 'scoresheet' or request.resolver_match.url_name == 'scoresheet upload' %}active{% endif %}"><i class="fas fa-file-alt"></i>Upload Scoresheet</a>
                     </div>
                 </div>
                 <div class="account">
@@ -196,7 +196,7 @@
                         <a href="{% url 'allocated list' %}" class="{% if request.resolver_match.url_name == 'allocated list' %}active{% endif %}"><i class="fas fa-clipboard-list"></i>Allocation List</a>
                         <a href="{% url 'update timetable' %}" class="{% if request.resolver_match.url_name == 'update timetable' %}active{% endif %}"><i class="fas fa-table"></i>Update Timetable</a>
                         <a href="{% url 'update library' %}" class="{% if request.resolver_match.url_name == 'update library' %}active{% endif %}"><i class="fas fa-book"></i>Update Students Library</a>
-                        <a href="mastersheet.html"><i class="fas fa-file-alt"></i>Result Mastersheet</a>
+                        <a href="{% url 'mastersheet' %}" class="{% if request.resolver_match.url_name == 'mastersheet' %}active{% endif %}"><i class="fas fa-file-alt"></i>Result Mastersheet</a>
                         <a href="{% url 'session and semester' %}" class="{% if request.resolver_match.url_name == 'session and semester' %}active{% endif %}"><i class="fas fa-cogs"></i>Session and Semester</a>
                         <a href="{% url 'logout' %}" class="side_link02"><i class="fas fa-power-off"></i>Log Out</a>
                     </div>
@@ -239,7 +239,7 @@
                     <a href="{% url 'allocated list' %}" class="{% if request.resolver_match.url_name == 'allocated list' %}active{% endif %}"><i class="fas fa-clipboard-list"></i>Allocation List</a>
                     <a href="{% url 'update timetable' %}" class="{% if request.resolver_match.url_name == 'update timetable' %}active{% endif %}"><i class="fas fa-table"></i>Update Timetable</a>
                     <a href="{% url 'update library' %}" class="{% if request.resolver_match.url_name == 'update library' %}active{% endif %}"><i class="fas fa-book"></i>Update Students Library</a>
-                    <a href="mastersheet.html"><i class="fas fa-file-alt"></i>Result Mastersheet</a>
+                    <a href="{% url 'mastersheet' %}" class="{% if request.resolver_match.url_name == 'mastersheet' %}active{% endif %}"><i class="fas fa-file-alt"></i>Result Mastersheet</a>
                     <a href="{% url 'session and semester' %}" class="{% if request.resolver_match.url_name == 'session and semester' %}active{% endif %}"><i class="fas fa-cogs"></i>Session and Semester</a>
                 </div>
             </div>

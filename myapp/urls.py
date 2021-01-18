@@ -68,7 +68,8 @@ urlpatterns = [
     path("logout", authentication.logout_user, name="logout"),
     path("admin/sm/mastersheet", assessment.mastersheet, name="mastersheet"),
     path("staff/scoresheet", assessment.scoresheet, name="scoresheet"),
-    path("staff/scoresheet/upload/<str:course>", assessment.scoresheet_upload, name="scoresheet upload"),
+    path("staff/scoresheet/upload/<str:course_code>", assessment.scoresheet_upload, name="scoresheet upload"),
+    path("staff/scoresheet/download/<str:course_code>", assessment.scoresheet_download, name="scoresheet download"),
     path("courses", courses.courses, name="courses"),
     
     path("attendance", portal.attendance, name="attendance"),

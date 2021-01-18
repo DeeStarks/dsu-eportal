@@ -13,7 +13,7 @@ from user_profile.models import UserProfile
 import os
 from pathlib import Path
 import json
-import pandas as pd
+import csv
 
 @login_required(login_url='authentication')
 def index(request):

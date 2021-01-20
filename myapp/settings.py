@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'user_profile',
     'session_semester',
     'timetable',
+    'assessment',
 ]
 
 MIDDLEWARE = [

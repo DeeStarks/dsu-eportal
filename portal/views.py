@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 from myapp.decorators import user_group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from user_profile.models import UserProfile
+from assessment.models import ContinousAssessment
+from user_profile.models import UserProfile
 import os
 from pathlib import Path
 import json
@@ -28,37 +30,73 @@ def index(request):
     course_num_count = len(courses)
     course_word_count = num2words(course_num_count)
 
-    BASE_DIR = Path(__file__).resolve().parent.parent
-    json_loc = os.path.join(BASE_DIR, 'static/admin_chart.json')
+    # Getting students' performance from the backend and sending to json for display on admin dashboard
+    assessment = ContinousAssessment.objects.all()
+    freshman_students = []
+    sophomore_students = []
+    junior_students = []
+    senior_students = []
 
-    for p in os.listdir(os.path.join(BASE_DIR, 'media')):
-        print(p)
+    for ca in assessment:
+        student = ca.user
+        student_profile = UserProfile.objects.get(user=student)
+        student_level = student_profile.level
+        if student_level == "FRESHMAN":
+            freshman_students.append(ca)
+        elif student_level == "SOPHOMORE":
+            sophomore_students.append(ca)
+        elif student_level == "JUNIOR":
+            junior_students.append(ca)
+        elif student_level == "SENIOR":
+            senior_students.append(ca)
 
-    level_100, level_200, level_300, level_400 = 5, 0, 0, 0
-    total_performance = level_100 + level_200 + level_300 + level_400
+    freshman_performance, sophomore_performance, junior_performance, senior_performance = 0, 0, 0, 0
+    freshman_total, sophomore_total, junior_total, senior_total = len(freshman_students)*100, len(sophomore_students)*100, len(junior_students)*100, len(senior_students)*100
 
-    l100_performance_percentage, l200_performance_percentage, l300_performance_percentage, l400_performance_percentage = None, None, None, None
+    if freshman_students:
+        for student in freshman_students:
+            freshman_performance+= int(student.total)
+    if sophomore_students:
+        for student in sophomore_students:
+            sophomore_performance+= int(student.total)
+    if junior_students:
+        for student in junior_students:
+            junior_performance+= int(student.total)
+    if senior_students:
+        for student in senior_students:
+            senior_performance+= int(student.total)
 
-    if level_100 == 0 and level_200 == 0 and level_300 == 0 and level_400 == 0:
-        l100_performance_percentage, l200_performance_percentage, l300_performance_percentage, l400_performance_percentage = 50, 50, 50, 50
-    else:
-        l100_performance_percentage = int(round((level_100/total_performance)*100))
-        l200_performance_percentage = int(round((level_200/total_performance)*100))
-        l300_performance_percentage = int(round((level_300/total_performance)*100))
-        l400_performance_percentage = int(round((level_400/total_performance)*100))
+    freshman_percentage, sophomore_percentage, junior_percentage, senior_percentage = 0, 0, 0, 0
 
+    if freshman_students:
+        freshman_percentage = int(round(freshman_performance/freshman_total*100))
+    if sophomore_students:
+        sophomore_percentage = int(round(sophomore_performance/sophomore_total*100))
+    if junior_students:
+        junior_percentage = int(round(junior_performance/junior_total*100))
+    if senior_students:
+        senior_percentage = int(round(senior_performance/senior_total*100))
+        
+    students_total_performance = freshman_percentage + sophomore_percentage + junior_percentage + senior_percentage
+
+    freshman_rate, sophomore_rate, junior_rate, senior_rate = freshman_percentage/10, sophomore_percentage/10, junior_percentage/10, senior_percentage/10
+    
+    if freshman_rate == 0 and sophomore_rate == 0 and junior_rate == 0 and senior_rate == 0:
+        freshman_percentage, sophomore_percentage, junior_percentage, senior_percentage = 50, 50, 50, 50
 
     file_to_json = {
-        "l100_pp": l100_performance_percentage,
-        "l200_pp": l200_performance_percentage,
-        "l300_pp": l300_performance_percentage,
-        "l400_pp": l400_performance_percentage,
-        "level_100": level_100,
-        "level_200": level_200,
-        "level_300": level_300,
-        "level_400": level_400,
+        "freshman_percentage": int(round((freshman_percentage/students_total_performance)*100)),
+        "sophomore_percentage": int(round((sophomore_percentage/students_total_performance)*100)),
+        "junior_percentage": int(round((junior_percentage/students_total_performance)*100)),
+        "senior_percentage": int(round((senior_percentage/students_total_performance)*100)),
+        "freshman_rate": freshman_rate,
+        "sophomore_rate": sophomore_rate,
+        "junior_rate": junior_rate,
+        "senior_rate": senior_rate,
     }
 
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    json_loc = os.path.join(BASE_DIR, 'static/admin_chart.json')
     with open(json_loc, 'w') as json_file:
         json_file.write(json.dumps(file_to_json))
 

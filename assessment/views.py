@@ -11,6 +11,7 @@ import csv
 from session_semester.models import SessionAndSemester
 from user_profile.models import StudentCourses, UserProfile, DEPARTMENT
 from courses.models import Course
+from .models import ContinousAssessment
 
 # Create your views here.
 @login_required(login_url='authentication')
@@ -61,7 +62,7 @@ def scoresheet_download(request, course_code):
             [f'{session__semester.get_semester_display()}'],
             [f'{course.course_code} ({course.course_title}) - {course.course_unit} unit(s)'],
             [f'{course_level()} Level'],
-            [f'Scoresheet by: {request.user.get_full_name()}']
+            [f"Lecturer's Name: {request.user.get_full_name()}"]
         ]
 
         content = [
@@ -132,8 +133,6 @@ def scoresheet_upload(request, course_code):
                                             if grade[0].isnumeric():
                                                 students_grades[grade[2]] = {}
                                                 students_grades[grade[2]]["name"] = grade[1]
-                                                students_grades[grade[2]]["session"] = scoresheet_session
-                                                students_grades[grade[2]]["semester"] = scoresheet_semester
                                                 students_grades[grade[2]]["course_code"] = scoresheet_course_code
                                                 students_grades[grade[2]]["attendance"] = grade[3]
                                                 students_grades[grade[2]]["assignment"] = grade[4]
@@ -146,6 +145,8 @@ def scoresheet_upload(request, course_code):
                                                 students_grades[grade[2]]["exam_q4"] = grade[11]
                                                 students_grades[grade[2]]["exam_q5"] = grade[12]
                                                 students_grades[grade[2]]["exam_total"] = grade[13]
+                                                students_grades[grade[2]]["session"] = scoresheet_session
+                                                students_grades[grade[2]]["semester"] = scoresheet_semester
                                         
                                         for student_key, student_value in students_grades.items():
                                             for grade_key, grade_value in student_value.items():
@@ -153,8 +154,33 @@ def scoresheet_upload(request, course_code):
                                                     message['outcome'] = "Failed!"
                                                     message['message'] = f"Please fill up the scoresheet! {students_grades[student_key]['name']}'s grades are not completely filled up."
                                                     message['color'] = "red"
+                                                if not students_grades[student_key]["ca_total"].isnumeric():
+                                                    message['outcome'] = "Failed!"
+                                                    message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Continous Assessment Total Score is not a number."
+                                                    message['color'] = "red"
+                                                if not students_grades[student_key]["exam_total"].isnumeric():
+                                                    message['outcome'] = "Failed!"
+                                                    message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Examination Total Score is not a number."
+                                                    message['color'] = "red"
+
                                         
                                         if not message["outcome"]:
+                                            for student_object in students_grades:
+                                                student = User.objects.get(username=student_object)
+                                                course = Course.objects.get(course_code=students_grades[student_object]['course_code'])
+                                                ca_total = int(students_grades[student_object]['ca_total'])
+                                                exam_total = int(students_grades[student_object]['exam_total'])
+                                                total = ca_total+exam_total
+                                                ContinousAssessment.objects.create(
+                                                    user=student,
+                                                    course=course,
+                                                    ca_total=ca_total,
+                                                    exam_total=exam_total,
+                                                    total=total,
+                                                    semester=students_grades[student_object]['semester'],
+                                                    session=students_grades[student_object]['session']
+                                                )
+
                                             message['outcome'] = "Success!"
                                             message['message'] = "Scoresheet uploaded!"
                                             message['color'] = "green"

@@ -60,7 +60,8 @@ def scoresheet_download(request, course_code):
             [f'{session__semester.get_session_display()}'],
             [f'{session__semester.get_semester_display()}'],
             [f'{course.course_code} ({course.course_title}) - {course.course_unit} unit(s)'],
-            [f'{course_level()} Level']
+            [f'{course_level()} Level'],
+            [f'Scoresheet by: {request.user.get_full_name()}']
         ]
 
         content = [
@@ -76,7 +77,7 @@ def scoresheet_download(request, course_code):
 
         # Creating a CSV file
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="{session__semester.get_session_display()}-{session__semester.get_semester_display()}-{course_code}-scoresheet.csv"'
+        response['Content-Disposition'] = f'attachment; filename="{session__semester.get_session_display()}-{session__semester.get_semester_display()}-{course_code}-scoresheet.csv"' 
 
         # Writing into the created CSV file
         writer = csv.writer(response)
@@ -89,13 +90,91 @@ def scoresheet_download(request, course_code):
 @login_required(login_url='authentication')
 @user_group(allowed_roles=['staff'])
 def scoresheet_upload(request, course_code):
-    BASE_DIR = Path(__file__).resolve().parent.parent
+    message = {
+        'outcome': '',
+        'message': '',
+        'color': ''
+    }
+    
+    students_grades = {}
 
-    # with open(os.path.join(BASE_DIR, 'media/assessment_files/scoresheet_templates/template_1.csv'), 'w') as scoresheet:
-        # write_sheet = csv.writer()
+    if request.method == "POST":
+        sheet = None
+        if request.FILES:
+            sheet = request.FILES.get('sheet')
+
+        if sheet != None:
+            if sheet.name.endswith(".csv"):
+                try:
+                    sheet_name = sheet.name.split("-")
+                    scoresheet_session = sheet_name[0].replace("_", "/")
+                    scoresheet_semester = sheet_name[1]
+                    scoresheet_course_code = sheet_name[2]
+                    if scoresheet_course_code != course_code:
+                        message['outcome'] = "Failed!"
+                        message['message'] = f"You uploaded a scoresheet with course code - {scoresheet_course_code}, instead of {course_code}"
+                        message['color'] = "red"
+                    else:
+                        sheet_decode = io.TextIOWrapper(sheet.file, encoding='utf-8 ', errors='replace')
+                        sheet_reader = csv.reader(sheet_decode, delimiter=",")
+                        main_sheet = [sheet for sheet in sheet_reader]
+
+                        if not main_sheet:
+                            message['outcome'] = "Failed!"
+                            message['message'] = "The scoresheet you uploaded contains no students!"
+                            message['color'] = "red"
+                        else:
+                            for index, row in enumerate(main_sheet):
+                                if row[0].isnumeric():
+                                    if int(row[0]) == 1:
+                                        recorded_students = [grade for grade in main_sheet[index:]]
+                                        for grade in recorded_students:
+                                            if grade[0].isnumeric():
+                                                students_grades[grade[2]] = {}
+                                                students_grades[grade[2]]["name"] = grade[1]
+                                                students_grades[grade[2]]["session"] = scoresheet_session
+                                                students_grades[grade[2]]["semester"] = scoresheet_semester
+                                                students_grades[grade[2]]["course_code"] = scoresheet_course_code
+                                                students_grades[grade[2]]["attendance"] = grade[3]
+                                                students_grades[grade[2]]["assignment"] = grade[4]
+                                                students_grades[grade[2]]["quiz"] = grade[5]
+                                                students_grades[grade[2]]["test"] = grade[6]
+                                                students_grades[grade[2]]["ca_total"] = grade[7]
+                                                students_grades[grade[2]]["exam_q1"] = grade[8]
+                                                students_grades[grade[2]]["exam_q2"] = grade[9]
+                                                students_grades[grade[2]]["exam_q3"] = grade[10]
+                                                students_grades[grade[2]]["exam_q4"] = grade[11]
+                                                students_grades[grade[2]]["exam_q5"] = grade[12]
+                                                students_grades[grade[2]]["exam_total"] = grade[13]
+                                        
+                                        for student_key, student_value in students_grades.items():
+                                            for grade_key, grade_value in student_value.items():
+                                                if not students_grades[student_key][grade_key]:
+                                                    message['outcome'] = "Failed!"
+                                                    message['message'] = f"Please fill up the scoresheet! {students_grades[student_key]['name']}'s grades are not completely filled up."
+                                                    message['color'] = "red"
+                                        
+                                        if not message["outcome"]:
+                                            message['outcome'] = "Success!"
+                                            message['message'] = "Scoresheet uploaded!"
+                                            message['color'] = "green"
+
+                except IndexError:
+                    message['outcome'] = "Failed!"
+                    message['message'] = "Please upload only the updated file of the downloaded scoresheet from STEP 1 without renaming the filename!"
+                    message['color'] = "red"
+            else:
+                message['outcome'] = "Failed!"
+                message['message'] = "That is not a CSV file. Please upload a CSV file!"
+                message['color'] = "red"
+        else:
+            message['outcome'] = "Failed!"
+            message['message'] = "Please, upload a file!"
+            message['color'] = "red"
 
     context = {
-        'course_code': course_code
+        'course_code': course_code,
+        'message': message
     }
     return render(request, "lecturer_panel/upload.html", context)
     
@@ -106,9 +185,8 @@ def mastersheet(request, *args, **kwargs):
     for department_obj in DEPARTMENT:
         for departments in department_obj[1]:
             all_departments.append(departments[1])
-    print(all_departments)
     
     context = {
-        
+        "departments": all_departments
     }
     return render(request, 'admin_panel/mastersheet.html', context)

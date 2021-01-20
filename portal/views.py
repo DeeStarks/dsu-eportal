@@ -34,29 +34,17 @@ def index(request):
     for p in os.listdir(os.path.join(BASE_DIR, 'media')):
         print(p)
 
-    level_100, level_200, level_300, level_400 = 8, 5, 9, 6
+    level_100, level_200, level_300, level_400 = 5, 0, 0, 0
     total_performance = level_100 + level_200 + level_300 + level_400
 
     l100_performance_percentage, l200_performance_percentage, l300_performance_percentage, l400_performance_percentage = None, None, None, None
 
-    if level_100 == 0:
-        l100_performance_percentage = 50
+    if level_100 == 0 and level_200 == 0 and level_300 == 0 and level_400 == 0:
+        l100_performance_percentage, l200_performance_percentage, l300_performance_percentage, l400_performance_percentage = 50, 50, 50, 50
     else:
         l100_performance_percentage = int(round((level_100/total_performance)*100))
-
-    if level_200 == 0:
-        l200_performance_percentage = 50
-    else:
         l200_performance_percentage = int(round((level_200/total_performance)*100))
-
-    if level_300 == 0:
-        l300_performance_percentage = 50
-    else:
         l300_performance_percentage = int(round((level_300/total_performance)*100))
-
-    if level_400 == 0:
-        l400_performance_percentage = 50
-    else:
         l400_performance_percentage = int(round((level_400/total_performance)*100))
 
 

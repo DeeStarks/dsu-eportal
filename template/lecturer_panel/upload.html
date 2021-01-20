@@ -3,26 +3,100 @@
 
 {% block page_content %}
 <style>
+    .success_title{
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    #success_message{
+        color: #ffffff;
+        font-size: 13px;
+        position: fixed;
+        width: 300px;
+        padding: 10px;
+        top: 100px;
+        right: -500px;
+        z-index: 5;
+    }
+    .red{
+        background-color: #8a0500;
+    }
+    .green{
+        background-color: #178a00;
+    }
+    #success{
+        border-top: 1px solid #ffffff62;
+        padding: 10px 20px;
+    }
+    #close{
+        font-size: 15px;
+        width: 100%;
+        line-height: 20px;
+        cursor: pointer;
+    }
     .fileuploader{
         background-color: #00205aee;
     }
-
     .fileuploader .cloud_icon{
         color: #00205aee;
     }
+    .fileuploader form label{
+        color: rgb(0, 32, 90);
+    }
+    .fileuploader form label:hover{
+        background-color: transparent !important;
+    }
+    .download{
+        padding: 10px 30px; 
+        background-color: rgb(0, 32, 90); 
+        border: 1px solid rgb(0, 32, 90); 
+        color: white; 
+        transition: 200ms; 
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none !important;
+    }
+    .download:hover{
+        background-color: transparent;
+        color: rgb(0, 32, 90);
+    }
 </style>
-<div class="main_body upload_page">
-    <div class="body_title">Upload Scoresheet</div>
+
+<div id="success_message" class="row {% if message.color == 'red' %}red{% elif message.color == 'green' %}green{% endif %}">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            {{ message.outcome }}
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
     <hr>
-    <div style="margin: 0 0 30px 0; width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 700;">Don't have the latest {{ course_code }} scoresheet template?<a href="{% url 'scoresheet download' course_code %}"> Download</a></div>
+    <div class="col-12" id="success">{{ message.message }}</div>
+</div>
+
+<div class="main_body upload_page">
+    <div class="body_title">Scoresheet</div>
+    <hr>
+    <div style="font-size: 15px; font-weight:700; text-align: center;">Follow the steps below to upload scoresheet:</div>
+    <hr>
+    <div style="font-size: 20px; font-weight: bold; width: 100%; text-align: center; margin: 10px 0;">STEP 1:</div>
+    <div style="margin: 0 0 30px 0; width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 700;">Click the download button to download {{ course_code }} scoresheet template.</div>
+    <div style="text-align: center;"><a href="{% url 'scoresheet download' course_code %}" class="download"> Download</a></div>
+    <hr>
+    <div style="font-size: 20px; font-weight: bold; width: 100%; text-align: center; margin: 10px 0;">STEP 2:</div>
+    <div style="margin: 0 0 30px 0; width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 700;">Open the scoresheet you downloaded from STEP 1, edit file and update with appropriate values and then move to STEP 3 to upload.</div>
+    <hr>
+    <div style="font-size: 20px; font-weight: bold; width: 100%; text-align: center; margin: 10px 0;">STEP 3:</div>
+    <div style="margin: 0 0 30px 0; width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 700;">Upload the scoresheet below. <div>NOTE that only CSV files like the one downloaded in STEP 1 will be accepted.</div></div>
     <div class="upload">
         <div class="fileuploader ">
             <div id="upload-label">
                 <i class="fas fa-cloud-upload-alt cloud_icon"></i>
                 <br>
-                <form action="">
-                    <input type="file" name="upload" id="upload">
-                    <label for="upload" id="click_upload">Click to upload file.</label>
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="sheet" id="upload">
+                    <label for="upload" id="click_upload">Click to upload file</label>
                     <div class="file_display">
                         <i class="far fa-file-alt"></i>
                         <br>
@@ -34,4 +108,18 @@
         </div>
     </div>
 </div>
+<script>
+    window.onload = (event) => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
 {% endblock %}

@@ -154,10 +154,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # SMTP Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-# Enter your email details below for sending emails
-EMAIL_HOST_USER = 'enteryouremailaddress'
-EMAIL_HOST_PASSWORD = 'enteryourpassword'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '404e54fe7bfee7'
+EMAIL_HOST_PASSWORD = 'fec11bd7cab818'
+EMAIL_PORT = '2525'

@@ -150,18 +150,26 @@ def scoresheet_upload(request, course_code):
                                         
                                         for student_key, student_value in students_grades.items():
                                             for grade_key, grade_value in student_value.items():
-                                                if not students_grades[student_key][grade_key]:
+                                                if students_grades[student_key][grade_key] == '':
                                                     message['outcome'] = "Failed!"
-                                                    message['message'] = f"Please fill up the scoresheet! {students_grades[student_key]['name']}'s grades are not completely filled up."
+                                                    message['message'] = f"Oops! The scoresheet is not filled completely. Please fill up the scoresheet!."
                                                     message['color'] = "red"
-                                                if not students_grades[student_key]["ca_total"].isnumeric():
-                                                    message['outcome'] = "Failed!"
-                                                    message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Continous Assessment Total Score is not a number."
-                                                    message['color'] = "red"
-                                                if not students_grades[student_key]["exam_total"].isnumeric():
-                                                    message['outcome'] = "Failed!"
-                                                    message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Examination Total Score is not a number."
-                                                    message['color'] = "red"
+                                        
+                                        if not message['outcome']:
+                                            for student_key, student_value in students_grades.items():
+                                                for grade_key, grade_value in student_value.items():
+                                                    if not students_grades[student_key]["ca_total"].isnumeric():
+                                                        message['outcome'] = "Failed!"
+                                                        message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Continous Assessment Total Score is not a number."
+                                                        message['color'] = "red"
+                                                        
+                                        if not message['outcome']:
+                                            for student_key, student_value in students_grades.items():
+                                                for grade_key, grade_value in student_value.items():
+                                                    if not students_grades[student_key]["exam_total"].isnumeric():
+                                                        message['outcome'] = "Failed!"
+                                                        message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Examination Total Score is not a number."
+                                                        message['color'] = "red"
 
                                         
                                         if not message["outcome"]:
@@ -216,3 +224,12 @@ def mastersheet(request, *args, **kwargs):
         "departments": all_departments
     }
     return render(request, 'admin_panel/mastersheet.html', context)
+    
+@login_required(login_url='authentication')
+@user_group(allowed_roles=['admin'])
+def mastersheet_template(request, *args, **kwargs):
+    
+    context = {
+        
+    }
+    return render(request, 'admin_panel/mastersheet_template.html', context)

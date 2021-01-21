@@ -67,6 +67,7 @@ urlpatterns = [
     path("admin/user/add", authentication.create_user, name="register"),
     path("logout", authentication.logout_user, name="logout"),
     path("admin/sm/mastersheet", assessment.mastersheet, name="mastersheet"),
+    path("admin/sm/mastersheet/download", assessment.mastersheet_template, name="mastersheet template"),
     path("staff/scoresheet", assessment.scoresheet, name="scoresheet"),
     path("staff/scoresheet/upload/<str:course_code>", assessment.scoresheet_upload, name="scoresheet upload"),
     path("staff/scoresheet/download/<str:course_code>", assessment.scoresheet_download, name="scoresheet download"),

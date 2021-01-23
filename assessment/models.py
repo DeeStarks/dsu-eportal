@@ -9,6 +9,19 @@ class ContinousAssessment(models.Model):
     ca_total = models.IntegerField(null=True, blank=True)
     exam_total = models.IntegerField(null=True, blank=True)
     total = models.IntegerField(null=True, blank=True)
+    grading_point = models.IntegerField(null=True, blank=True)
+    quality_point = models.IntegerField(null=True, blank=True)
     session = models.CharField(max_length=100, null=True, blank=True)
     semester = models.CharField(max_length=100, null=True, blank=True)
     
+class StudentGrade(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    session = models.CharField(max_length=100, null=True, blank=True)
+    semester = models.CharField(max_length=100, null=True, blank=True)
+    tcu = models.IntegerField(null=True, blank=True)
+    gpa = models.CharField(max_length=100, null=True, blank=True)
+    cgpa = models.CharField(max_length=100, null=True, blank=True)
+
+# Very Important
+class UploadedScoresheets(models.Model):
+    sheet_name = models.CharField(max_length=100, null=True, blank=True)

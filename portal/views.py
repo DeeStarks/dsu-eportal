@@ -79,6 +79,9 @@ def index(request):
         
     students_total_performance = freshman_percentage + sophomore_percentage + junior_percentage + senior_percentage
 
+    if students_total_performance == 0:
+        students_total_performance = 1
+
     freshman_rate, sophomore_rate, junior_rate, senior_rate = freshman_percentage/10, sophomore_percentage/10, junior_percentage/10, senior_percentage/10
     
     if freshman_rate == 0 and sophomore_rate == 0 and junior_rate == 0 and senior_rate == 0:

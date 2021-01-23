@@ -11,7 +11,7 @@ import csv
 from session_semester.models import SessionAndSemester
 from user_profile.models import StudentCourses, UserProfile, DEPARTMENT
 from courses.models import Course
-from .models import ContinousAssessment
+from .models import ContinousAssessment, StudentGrade, UploadedScoresheets
 
 # Create your views here.
 @login_required(login_url='authentication')
@@ -106,97 +106,164 @@ def scoresheet_upload(request, course_code):
 
         if sheet != None:
             if sheet.name.endswith(".csv"):
-                try:
-                    sheet_name = sheet.name.split("-")
-                    scoresheet_session = sheet_name[0].replace("_", "/")
-                    scoresheet_semester = sheet_name[1]
-                    scoresheet_course_code = sheet_name[2]
-                    if scoresheet_course_code != course_code:
-                        message['outcome'] = "Failed!"
-                        message['message'] = f"You uploaded a scoresheet with course code - {scoresheet_course_code}, instead of {course_code}"
-                        message['color'] = "red"
-                    else:
-                        sheet_decode = io.TextIOWrapper(sheet.file, encoding='utf-8 ', errors='replace')
-                        sheet_reader = csv.reader(sheet_decode, delimiter=",")
-                        main_sheet = [sheet for sheet in sheet_reader]
-
-                        if not main_sheet:
+                available_sheets = [sheet.sheet_name for sheet in UploadedScoresheets.objects.all()]
+                if sheet.name in available_sheets:
+                    message['outcome'] = "Failed!"
+                    message['message'] = "Oops! The scoresheet you uploaded already exists and it can no longer be updated. If you need to make changes, contact an Admin!"
+                    message['color'] = "red"
+                else:
+                    try:
+                        sheet_name = sheet.name.split("-")
+                        scoresheet_session = sheet_name[0].replace("_", "/")
+                        scoresheet_semester = sheet_name[1]
+                        scoresheet_course_code = sheet_name[2]
+                        if scoresheet_course_code != course_code:
                             message['outcome'] = "Failed!"
-                            message['message'] = "The scoresheet you uploaded contains no students!"
+                            message['message'] = f"You uploaded a scoresheet with course code - {scoresheet_course_code}, instead of {course_code}"
                             message['color'] = "red"
                         else:
-                            for index, row in enumerate(main_sheet):
-                                if row[0].isnumeric():
-                                    if int(row[0]) == 1:
-                                        recorded_students = [grade for grade in main_sheet[index:]]
-                                        for grade in recorded_students:
-                                            if grade[0].isnumeric():
-                                                students_grades[grade[2]] = {}
-                                                students_grades[grade[2]]["name"] = grade[1]
-                                                students_grades[grade[2]]["course_code"] = scoresheet_course_code
-                                                students_grades[grade[2]]["attendance"] = grade[3]
-                                                students_grades[grade[2]]["assignment"] = grade[4]
-                                                students_grades[grade[2]]["quiz"] = grade[5]
-                                                students_grades[grade[2]]["test"] = grade[6]
-                                                students_grades[grade[2]]["ca_total"] = grade[7]
-                                                students_grades[grade[2]]["exam_q1"] = grade[8]
-                                                students_grades[grade[2]]["exam_q2"] = grade[9]
-                                                students_grades[grade[2]]["exam_q3"] = grade[10]
-                                                students_grades[grade[2]]["exam_q4"] = grade[11]
-                                                students_grades[grade[2]]["exam_q5"] = grade[12]
-                                                students_grades[grade[2]]["exam_total"] = grade[13]
-                                                students_grades[grade[2]]["session"] = scoresheet_session
-                                                students_grades[grade[2]]["semester"] = scoresheet_semester
-                                        
-                                        for student_key, student_value in students_grades.items():
-                                            for grade_key, grade_value in student_value.items():
-                                                if students_grades[student_key][grade_key] == '':
-                                                    message['outcome'] = "Failed!"
-                                                    message['message'] = f"Oops! The scoresheet is not filled completely. Please fill up the scoresheet!."
-                                                    message['color'] = "red"
-                                        
-                                        if not message['outcome']:
+                            sheet_decode = io.TextIOWrapper(sheet.file, encoding='utf-8 ', errors='replace')
+                            sheet_reader = csv.reader(sheet_decode, delimiter=",")
+                            main_sheet = [sheet for sheet in sheet_reader]
+
+                            if not main_sheet:
+                                message['outcome'] = "Failed!"
+                                message['message'] = "The scoresheet you uploaded contains no students!"
+                                message['color'] = "red"
+                            else:
+                                for index, row in enumerate(main_sheet):
+                                    if row[0].isnumeric():
+                                        if int(row[0]) == 1:
+                                            recorded_students = [grade for grade in main_sheet[index:]]
+                                            for grade in recorded_students:
+                                                if grade[0].isnumeric():
+                                                    students_grades[grade[2]] = {}
+                                                    students_grades[grade[2]]["name"] = grade[1]
+                                                    students_grades[grade[2]]["course_code"] = scoresheet_course_code
+                                                    students_grades[grade[2]]["attendance"] = grade[3]
+                                                    students_grades[grade[2]]["assignment"] = grade[4]
+                                                    students_grades[grade[2]]["quiz"] = grade[5]
+                                                    students_grades[grade[2]]["test"] = grade[6]
+                                                    students_grades[grade[2]]["ca_total"] = grade[7]
+                                                    students_grades[grade[2]]["exam_q1"] = grade[8]
+                                                    students_grades[grade[2]]["exam_q2"] = grade[9]
+                                                    students_grades[grade[2]]["exam_q3"] = grade[10]
+                                                    students_grades[grade[2]]["exam_q4"] = grade[11]
+                                                    students_grades[grade[2]]["exam_q5"] = grade[12]
+                                                    students_grades[grade[2]]["exam_total"] = grade[13]
+                                                    students_grades[grade[2]]["session"] = scoresheet_session
+                                                    students_grades[grade[2]]["semester"] = scoresheet_semester
+                                            
                                             for student_key, student_value in students_grades.items():
                                                 for grade_key, grade_value in student_value.items():
-                                                    if not students_grades[student_key]["ca_total"].isnumeric():
+                                                    if students_grades[student_key][grade_key] == '':
                                                         message['outcome'] = "Failed!"
-                                                        message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Continous Assessment Total Score is not a number."
+                                                        message['message'] = f"Oops! The scoresheet is not filled completely. Please fill up the scoresheet!."
                                                         message['color'] = "red"
-                                                        
-                                        if not message['outcome']:
-                                            for student_key, student_value in students_grades.items():
-                                                for grade_key, grade_value in student_value.items():
-                                                    if not students_grades[student_key]["exam_total"].isnumeric():
-                                                        message['outcome'] = "Failed!"
-                                                        message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Examination Total Score is not a number."
-                                                        message['color'] = "red"
+                                            
+                                            if not message['outcome']:
+                                                for student_key, student_value in students_grades.items():
+                                                    for grade_key, grade_value in student_value.items():
+                                                        if not students_grades[student_key]["ca_total"].isnumeric():
+                                                            message['outcome'] = "Failed!"
+                                                            message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Continous Assessment Total Score is not a number."
+                                                            message['color'] = "red"
+                                                            
+                                            if not message['outcome']:
+                                                for student_key, student_value in students_grades.items():
+                                                    for grade_key, grade_value in student_value.items():
+                                                        if not students_grades[student_key]["exam_total"].isnumeric():
+                                                            message['outcome'] = "Failed!"
+                                                            message['message'] = f"Please the grades should be recorded numerically! {students_grades[student_key]['name']}'s Examination Total Score is not a number."
+                                                            message['color'] = "red"
 
-                                        
-                                        if not message["outcome"]:
-                                            for student_object in students_grades:
-                                                student = User.objects.get(username=student_object)
-                                                course = Course.objects.get(course_code=students_grades[student_object]['course_code'])
-                                                ca_total = int(students_grades[student_object]['ca_total'])
-                                                exam_total = int(students_grades[student_object]['exam_total'])
-                                                total = ca_total+exam_total
-                                                ContinousAssessment.objects.create(
-                                                    user=student,
-                                                    course=course,
-                                                    ca_total=ca_total,
-                                                    exam_total=exam_total,
-                                                    total=total,
-                                                    semester=students_grades[student_object]['semester'],
-                                                    session=students_grades[student_object]['session']
-                                                )
+                                            
+                                            if not message["outcome"]:
+                                                for student_object in students_grades:
+                                                    student = User.objects.get(username=student_object)
+                                                    course = Course.objects.get(course_code=students_grades[student_object]['course_code'])
+                                                    ca_total = int(students_grades[student_object]['ca_total'])
+                                                    exam_total = int(students_grades[student_object]['exam_total'])
+                                                    total = ca_total+exam_total
+                                                    gp = 0
+                                                    if total in range(0, 40):
+                                                        gp = 0
+                                                    elif total in range(40, 45):
+                                                        gp = 1
+                                                    elif total in range(45, 50):
+                                                        gp = 2
+                                                    elif total in range(50, 60):
+                                                        gp = 3
+                                                    elif total in range(60, 70):
+                                                        gp = 4
+                                                    elif total in range(70, 101):
+                                                        gp = 5
+                                                    
+                                                    qp = gp*int(course.course_unit)
 
-                                            message['outcome'] = "Success!"
-                                            message['message'] = "Scoresheet uploaded!"
-                                            message['color'] = "green"
+                                                    if students_grades[student_object]['semester'] == "First Semester":
+                                                        for object in ContinousAssessment.objects.filter(semester='Second Semester'):
+                                                            object.delete()
+                                                    elif students_grades[student_object]['semester'] == "Second Semester":
+                                                        for object in ContinousAssessment.objects.filter(semester='First Semester'):
+                                                            object.delete()
 
-                except IndexError:
-                    message['outcome'] = "Failed!"
-                    message['message'] = "Please upload only the updated file of the downloaded scoresheet from STEP 1 without renaming the filename!"
-                    message['color'] = "red"
+                                                    ContinousAssessment.objects.create(
+                                                        user=student,
+                                                        course=course,
+                                                        ca_total=ca_total,
+                                                        exam_total=exam_total,
+                                                        total=total,
+                                                        grading_point=gp,
+                                                        quality_point=qp,
+                                                        semester=students_grades[student_object]['semester'],
+                                                        session=students_grades[student_object]['session']
+                                                    )
+                                                
+                                                for student_object in students_grades:
+                                                    user = User.objects.get(username=student_object)
+                                                    student_ca = ContinousAssessment.objects.filter(user=user)
+                                                    student_courses = StudentCourses.objects.filter(user=user)
+
+                                                    total_course_unit = 0
+                                                    for course in student_courses:
+                                                        total_course_unit += int(course.courses.course_unit)
+
+                                                    quality_point = 0
+                                                    for grade in student_ca:
+                                                        quality_point += grade.quality_point
+
+                                                    gpa = round((quality_point/total_course_unit), 1)
+
+                                                    total_gradings = [gpa]
+                                                    for point in StudentGrade.objects.filter(user=user):
+                                                        total_gradings.append(round(int(float(point.gpa))))
+                                                    
+                                                    cgpa = round((sum(total_gradings)/len(total_gradings)), 2)
+                                                    
+                                                    StudentGrade.objects.update_or_create(
+                                                        defaults={
+                                                            'user': user,
+                                                            'session': students_grades[student_object]['session'],
+                                                            'semester': students_grades[student_object]['semester']
+                                                        },
+                                                        user=user,
+                                                        session=students_grades[student_object]['session'],
+                                                        semester=students_grades[student_object]['semester'],
+                                                        tcu=total_course_unit,
+                                                        gpa=gpa,
+                                                        cgpa=cgpa,
+                                                    )
+
+                                                message['outcome'] = "Success!"
+                                                message['message'] = "Scoresheet uploaded!"
+                                                message['color'] = "green"
+                                                UploadedScoresheets.objects.create(sheet_name=sheet.name)
+
+                    except IndexError:
+                        message['outcome'] = "Failed!"
+                        message['message'] = "Please upload only the updated file of the downloaded scoresheet from STEP 1 without renaming the filename!"
+                        message['color'] = "red"
             else:
                 message['outcome'] = "Failed!"
                 message['message'] = "That is not a CSV file. Please upload a CSV file!"

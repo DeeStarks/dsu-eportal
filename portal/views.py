@@ -10,8 +10,10 @@ from django.contrib.auth.models import User
 from myapp.decorators import user_group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from user_profile.models import UserProfile
-from assessment.models import ContinousAssessment
+from assessment.models import ContinousAssessment, CarryOver
 from user_profile.models import UserProfile
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.hashers import make_password
 import os
 from pathlib import Path
 import json
@@ -29,6 +31,11 @@ def index(request):
     staff_word_count = num2words(staff_num_count)
     course_num_count = len(courses)
     course_word_count = num2words(course_num_count)
+    carryover_students = []
+    for student in CarryOver.objects.all():
+        if student.user not in carryover_students:
+            carryover_students.append(student)
+    carry_overs = num2words(len(carryover_students))
 
     # Getting students' performance from the backend and sending to json for display on admin dashboard
     assessment = ContinousAssessment.objects.all()
@@ -111,34 +118,58 @@ def index(request):
         "staff_word_count": staff_word_count,
         "course_num_count": course_num_count,
         "course_word_count": course_word_count,
+        "carryover_num_count": len(carryover_students),
+        "carryover_word_count": carry_overs
     }
     return render(request, "index.html", context)
 
+@login_required(login_url='authentication')
+@user_group(allowed_roles=['students', 'staff', 'admin'])
+def change_password(request):
+    message = {
+        'outcome': '',
+        'message': '',
+        'color': ''
+    }
+    user = User.objects.get(username=request.user)
+
+    if request.method == "POST":
+        current_password = request.POST.get('current_password')
+        password01 = request.POST.get('password01')
+        password02 = request.POST.get('password02')
+        print(password01)
+
+        if user.check_password(current_password):
+            if password01 == '' or password02 == '':
+                message['outcome'] = "Failed!"
+                message['message'] = "Please enter new password and confirm."
+                message['color'] = "red"
+            else:
+                if password01 != password02:
+                    message['outcome'] = "Failed!"
+                    message['message'] = "Oops! The new password did not match. Please re-type your new password and confirm."
+                    message['color'] = "red"
+                else:
+                    user.password = make_password(password01)
+                    user.save()
+                    update_session_auth_hash(request, user)
+                    message['outcome'] = "Success!"
+                    message['message'] = "Your password has been changed."
+                    message['color'] = "green"
+        else:
+            message['outcome'] = "Failed!"
+            message['message'] = "Oops! The current password you entered isn't your current password. Please re-type password."
+            message['color'] = "red"
+
+    context = {
+        'message': message
+    }
+    return render(request, 'password_change.html', context)
 
 @login_required(login_url='authentication')
 @user_group(allowed_roles=['students'])
 def attendance(request):
     return render(request, "attendance.html")
-
-@login_required(login_url='authentication')
-@user_group(allowed_roles=['students', 'staff'])
-def notification(request):
-    return render(request, "notification.html")
-
-@login_required(login_url='authentication')
-@user_group(allowed_roles=['students'])
-def records(request):
-    return render(request, "records.html")
-
-@login_required(login_url='authentication')
-@user_group(allowed_roles=['students'])
-def result(request):
-    BASE_DIR = Path(__file__).resolve().parent.parent
-    
-    context = {
-        
-    }
-    return render(request, "result.html", context)
 
 @login_required(login_url='authentication')
 def get_started(request):
@@ -200,3 +231,4 @@ def redirect_user(request, user_id):
         return redirect('staff')
     elif user.groups.filter(name='students'):
         return redirect('students')
+

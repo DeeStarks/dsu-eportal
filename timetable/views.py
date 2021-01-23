@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.contrib.auth.decorators import login_required
 from myapp.decorators import user_group
 import datetime
 from courses.models import Course
 from .models import Timetable
+from django.contrib.auth.models import User
 import datetime
 
 # Create your views here.
@@ -66,7 +67,6 @@ def update_timetable(request):
                 date_added=date__added,
                 file=file
             )
-            message = "Timetable uploaded!"
         elif table__type == 'EXAM_TIMETABLE':
             Timetable.objects.create(
                 type=table__type,
@@ -76,7 +76,9 @@ def update_timetable(request):
                 date_added=date__added,
                 file=file
             )
-            message = "Timetable uploaded!"
+
+        message = "Timetable uploaded!"
+
     context = {
         "year_1": f"{int(now.year)-1}/{now.year} Session",
         "year_2": f"{now.year}/{int(now.year)+1} Session",

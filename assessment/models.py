@@ -13,15 +13,23 @@ class ContinousAssessment(models.Model):
     quality_point = models.IntegerField(null=True, blank=True)
     session = models.CharField(max_length=100, null=True, blank=True)
     semester = models.CharField(max_length=100, null=True, blank=True)
+    level = models.CharField(max_length=100, null=True, blank=True)
+    carryover = models.BooleanField(default=False)
     
 class StudentGrade(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     session = models.CharField(max_length=100, null=True, blank=True)
     semester = models.CharField(max_length=100, null=True, blank=True)
+    attendance = models.IntegerField(null=True, blank=True)
     tcu = models.IntegerField(null=True, blank=True)
     gpa = models.CharField(max_length=100, null=True, blank=True)
     cgpa = models.CharField(max_length=100, null=True, blank=True)
+    level = models.CharField(max_length=100, null=True, blank=True)
 
-# Very Important
+class CarryOver(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
+
+# Very Important for storing already uploaded scoresheets' names
 class UploadedScoresheets(models.Model):
     sheet_name = models.CharField(max_length=100, null=True, blank=True)

@@ -5,13 +5,17 @@ from django.contrib.auth.models import User
 from myapp.decorators import user_group
 from courses.models import CourseAllocation
 import io
+from django.template.loader import get_template, render_to_string
+# import weasyprint
+from xhtml2pdf import pisa
 import os
 from pathlib import Path
 import csv
 from session_semester.models import SessionAndSemester
 from user_profile.models import StudentCourses, UserProfile, DEPARTMENT
 from courses.models import Course
-from .models import ContinousAssessment, StudentGrade, UploadedScoresheets
+from .models import ContinousAssessment, StudentGrade, UploadedScoresheets, CarryOver
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 @login_required(login_url='authentication')
@@ -117,6 +121,7 @@ def scoresheet_upload(request, course_code):
                         scoresheet_session = sheet_name[0].replace("_", "/")
                         scoresheet_semester = sheet_name[1]
                         scoresheet_course_code = sheet_name[2]
+                        session__semester = SessionAndSemester.objects.get(id=1)
                         if scoresheet_course_code != course_code:
                             message['outcome'] = "Failed!"
                             message['message'] = f"You uploaded a scoresheet with course code - {scoresheet_course_code}, instead of {course_code}"
@@ -179,6 +184,7 @@ def scoresheet_upload(request, course_code):
 
                                             
                                             if not message["outcome"]:
+                                                # Creating the continous assessment for the semester
                                                 for student_object in students_grades:
                                                     student = User.objects.get(username=student_object)
                                                     course = Course.objects.get(course_code=students_grades[student_object]['course_code'])
@@ -186,8 +192,10 @@ def scoresheet_upload(request, course_code):
                                                     exam_total = int(students_grades[student_object]['exam_total'])
                                                     total = ca_total+exam_total
                                                     gp = 0
+                                                    carry_over = False
                                                     if total in range(0, 40):
                                                         gp = 0
+                                                        carry_over = True
                                                     elif total in range(40, 45):
                                                         gp = 1
                                                     elif total in range(45, 50):
@@ -217,9 +225,18 @@ def scoresheet_upload(request, course_code):
                                                         grading_point=gp,
                                                         quality_point=qp,
                                                         semester=students_grades[student_object]['semester'],
-                                                        session=students_grades[student_object]['session']
+                                                        session=students_grades[student_object]['session'],
+                                                        level=UserProfile.objects.get(user=student).get_level_display(),
+                                                        carryover=carry_over
                                                     )
+
+                                                    if carry_over:
+                                                        CarryOver.objects.create(
+                                                            user=student,
+                                                            course=course
+                                                        )
                                                 
+                                                # Grading the students based on the information from the ContinousAssessment model class
                                                 for student_object in students_grades:
                                                     user = User.objects.get(username=student_object)
                                                     student_ca = ContinousAssessment.objects.filter(user=user)
@@ -235,29 +252,44 @@ def scoresheet_upload(request, course_code):
 
                                                     gpa = round((quality_point/total_course_unit), 1)
 
-                                                    total_gradings = [gpa]
-                                                    for point in StudentGrade.objects.filter(user=user):
-                                                        total_gradings.append(round(int(float(point.gpa))))
-                                                    
-                                                    cgpa = round((sum(total_gradings)/len(total_gradings)), 2)
+                                                    attendance = int(students_grades[student_object]['attendance'])
+                                                    level = UserProfile.objects.get(user=user).level
                                                     
                                                     StudentGrade.objects.update_or_create(
-                                                        defaults={
-                                                            'user': user,
-                                                            'session': students_grades[student_object]['session'],
-                                                            'semester': students_grades[student_object]['semester']
-                                                        },
                                                         user=user,
                                                         session=students_grades[student_object]['session'],
                                                         semester=students_grades[student_object]['semester'],
+                                                        attendance=attendance,
                                                         tcu=total_course_unit,
                                                         gpa=gpa,
-                                                        cgpa=cgpa,
+                                                        level=level,
+                                                        defaults={
+                                                            'user': user,
+                                                            'level': level,
+                                                            'semester': students_grades[student_object]['semester']
+                                                        }
                                                     )
+
+                                                    # Deleting the previous user's grade manually because the StudentGrade.objects.update_or_create above isn't updating the user's grade
+                                                    if StudentGrade.objects.filter(user=user).filter(level=level).filter(semester=students_grades[student_object]['semester']).count() > 1:
+                                                        StudentGrade.objects.filter(user=user).filter(level=level).filter(semester=students_grades[student_object]['semester'])[0].delete()
+                                                    
+                                                    # Calculating and adding the cgpa
+                                                    total_gradings = []
+                                                    for point in StudentGrade.objects.filter(user=user):
+                                                        total_gradings.append(float(point.gpa))
+                                                    
+                                                    cgpa = round((sum(total_gradings)/len(total_gradings)), 2)
+                                                    print(total_gradings)
+                                                    add_cgpa = StudentGrade.objects.filter(user=user).filter(level=level).get(semester=students_grades[student_object]['semester'])
+                                                    add_cgpa.cgpa = cgpa
+                                                    add_cgpa.save()
 
                                                 message['outcome'] = "Success!"
                                                 message['message'] = "Scoresheet uploaded!"
                                                 message['color'] = "green"
+                                                
+                                                # Save the uploaded filename
                                                 UploadedScoresheets.objects.create(sheet_name=sheet.name)
 
                     except IndexError:
@@ -292,11 +324,285 @@ def mastersheet(request, *args, **kwargs):
     }
     return render(request, 'admin_panel/mastersheet.html', context)
     
+def render_to_pdf(template_src, context):
+    template = get_template(template_src)
+    html = template.render(context)
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type="application/pdf")
+    else:
+        return None
+
 @login_required(login_url='authentication')
 @user_group(allowed_roles=['admin'])
-def mastersheet_template(request, *args, **kwargs):
+def mastersheet_template(request, department, level, *args, **kwargs):
+    results = {}
+    semester = ContinousAssessment.objects.all()[0].semester
+    session = ContinousAssessment.objects.all()[0].session
+    department_reverse = dict((j, [i, k]) for k, v in DEPARTMENT for i, j in v) 
+    faculty = department_reverse[department][1]
+    dpt_students = UserProfile.objects.filter(department=department_reverse[department][0]).filter(level=level)
+    courses_of_students = []
+
+    for student_profile in dpt_students:
+        student_courses = StudentCourses.objects.filter(user=student_profile.user)
+        for course in student_courses:
+            if level == "FRESHMAN":
+                for num in range(100, 200):
+                    if str(num) in course.courses.course_code and course.courses.course_code not in courses_of_students:
+                        courses_of_students.append(Course.objects.get(course_code=course.courses.course_code))
+            elif level == "SOPHOMORE":
+                for num in range(200, 300):
+                    if str(num) in course.courses.course_code and course.courses.course_code not in courses_of_students:
+                        courses_of_students.append(Course.objects.get(course_code=course.courses.course_code))
+            elif level == "JUNIOR":
+                for num in range(300, 400):
+                    if str(num) in course.courses.course_code and course.courses.course_code not in courses_of_students:
+                        courses_of_students.append(Course.objects.get(course_code=course.courses.course_code))
+            elif level == "SENIOR":
+                for num in range(400, 500):
+                    if str(num) in course.courses.course_code and course.courses.course_code not in courses_of_students:
+                        courses_of_students.append(Course.objects.get(course_code=course.courses.course_code))
+    
+    for student in dpt_students:
+        try:
+            grades = StudentGrade.objects.filter(user=student.user).filter(level=level).get(semester=semester)
+
+            results[student.user.username] = {
+                'name': student.user.get_full_name(),
+                'matric_no': student.user.username,
+                'total_course_unit': grades.tcu,
+                'grade_point_average': grades.gpa,
+                'cumm_grade_point_average': grades.cgpa,
+                'grades': []
+            }
+
+            for course in courses_of_students:
+                grading_course = Course.objects.get(course_code=course.course_code)
+                try:
+                    course_obj = ContinousAssessment.objects.filter(user=student.user).get(course=grading_course)
+                    results[student.user.username]['grades'].append(course_obj.total)
+                except ObjectDoesNotExist:
+                    results[student.user.username]['grades'].append('--')
+        except ObjectDoesNotExist:
+            results[student.user.username] = {
+                'name': student.user.get_full_name(),
+                'matric_no': student.user.username,
+                'total_course_unit': '--',
+                'grade_point_average': '--',
+                'cumm_grade_point_average': '--',
+                'grades': []
+            }
+            for course in courses_of_students:
+                results[student.user.username]['grades'].append('--')
     
     context = {
-        
+        'faculty': faculty,
+        'department': department,
+        'session': session,
+        'semester': semester,
+        'courses': courses_of_students,
+        'results': results
     }
+
+    # html = render_to_string('admin_panel/mastersheet_template.htm', context)
+    # response = HttpResponse(content_type='application/pdf')
+    # response['Content-Disposition'] = f'attachment; filename="{faculty} {department} {level} level mastersheet.pdf"'
+    # weasyprint.HTML(string=html, base_url=request.build_absolute_uri()).write_pdf(response, stylesheets=[weasyprint.CSS(settings.STATIC_ROOT + '/css/style.css')])
+    # return response
+
+    # pdf = render_to_pdf('admin_panel/mastersheet_template.html', context)
+    # return HttpResponse(pdf, content_type='application/pdf')
     return render(request, 'admin_panel/mastersheet_template.html', context)
+
+@login_required(login_url='authentication')
+@user_group(allowed_roles=['students'])
+def records(request):
+    student = User.objects.get(username=request.user.username)
+    grade_object = StudentGrade.objects.filter(user=student)
+    grades = {
+        'FRESHMAN':{
+            'first_semester_gpa': '',
+            'second_semester_gpa': '',
+            'cgpa': ''
+        },
+        'SOPHOMORE':{
+            'first_semester_gpa': '',
+            'second_semester_gpa': '',
+            'cgpa': ''
+        },
+        'JUNIOR':{
+            'first_semester_gpa': '',
+            'second_semester_gpa': '',
+            'cgpa': ''
+        },
+        'SENIOR':{
+            'first_semester_gpa': '',
+            'second_semester_gpa': '',
+            'cgpa': ''
+        }
+    }
+    # Getting the student's FRESHMAN grades if exists
+    try:
+        grades['FRESHMAN']['first_semester_gpa'] = grade_object.filter(level="FRESHMAN").get(semester="First Semester").gpa
+        grades['FRESHMAN']['cgpa'] = grade_object.filter(level="FRESHMAN").get(semester="First Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['FRESHMAN']['first_semester_gpa'] = '--'
+        grades['FRESHMAN']['cgpa'] = '--'
+        
+    try:
+        grades['FRESHMAN']['second_semester_gpa'] = grade_object.filter(level="FRESHMAN").get(semester="Second Semester").gpa
+        grades['FRESHMAN']['cgpa'] = grade_object.filter(level="FRESHMAN").get(semester="Second Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['FRESHMAN']['second_semester_gpa'] = '--'
+        grades['FRESHMAN']['cgpa'] = '--'
+        
+    # Getting the student's SOPHOMORE grades if exists
+    try:
+        grades['SOPHOMORE']['first_semester_gpa'] = grade_object.filter(level="SOPHOMORE").get(semester="First Semester").gpa
+        grades['SOPHOMORE']['cgpa'] = grade_object.filter(level="SOPHOMORE").get(semester="First Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['SOPHOMORE']['first_semester_gpa'] = '--'
+        grades['SOPHOMORE']['cgpa'] = '--'
+        
+    try:
+        grades['SOPHOMORE']['second_semester_gpa'] = grade_object.filter(level="SOPHOMORE").get(semester="Second Semester").gpa
+        grades['SOPHOMORE']['cgpa'] = grade_object.filter(level="SOPHOMORE").get(semester="Second Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['SOPHOMORE']['second_semester_gpa'] = '--'
+        grades['SOPHOMORE']['cgpa'] = '--'
+        
+    # Getting the student's JUNIOR grades if exists
+    try:
+        grades['JUNIOR']['first_semester_gpa'] = grade_object.filter(level="JUNIOR").get(semester="First Semester").gpa
+        grades['JUNIOR']['cgpa'] = grade_object.filter(level="JUNIOR").get(semester="First Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['JUNIOR']['first_semester_gpa'] = '--'
+        grades['JUNIOR']['cgpa'] = '--'
+        
+    try:
+        grades['JUNIOR']['second_semester_gpa'] = grade_object.filter(level="JUNIOR").get(semester="Second Semester").gpa
+        grades['JUNIOR']['cgpa'] = grade_object.filter(level="JUNIOR").get(semester="Second Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['JUNIOR']['second_semester_gpa'] = '--'
+        grades['JUNIOR']['cgpa'] = '--'
+        
+    # Getting the student's SENIOR grades if exists
+    try:
+        grades['SENIOR']['first_semester_gpa'] = grade_object.filter(level="SENIOR").get(semester="First Semester").gpa
+        grades['SENIOR']['cgpa'] = grade_object.filter(level="SENIOR").get(semester="First Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['SENIOR']['first_semester_gpa'] = '--'
+        grades['SENIOR']['cgpa'] = '--'
+        
+    try:
+        grades['SENIOR']['second_semester_gpa'] = grade_object.filter(level="SENIOR").get(semester="Second Semester").gpa
+        grades['SENIOR']['cgpa'] = grade_object.filter(level="SENIOR").get(semester="Second Semester").cgpa
+    except ObjectDoesNotExist:
+        grades['SENIOR']['second_semester_gpa'] = '--'
+        grades['SENIOR']['cgpa'] = '--'
+
+    context = {
+        'grades': grades
+    }
+    return render(request, "records.html", context)
+    
+@login_required(login_url='authentication')
+@user_group(allowed_roles=['students'])
+def result(request):
+    result = {}
+    student = User.objects.get(username=request.user)
+    level = UserProfile.objects.get(user=student).level
+    courses_registered = []
+    all_courses_registered = StudentCourses.objects.filter(user=student).order_by('courses__course_code')
+    if level == "FRESHMAN":
+        for course in all_courses_registered:
+            for num in range(100, 200):
+                if str(num) in course.courses.course_code:
+                    courses_registered.append(course)
+    elif level == "SOPHOMORE":
+        for course in all_courses_registered:
+            for num in range(200, 300):
+                if str(num) in course.courses.course_code:
+                    courses_registered.append(course)
+    elif level == "JUNIOR":
+        for course in all_courses_registered:
+            for num in range(300, 400):
+                if str(num) in course.courses.course_code:
+                    courses_registered.append(course)
+    elif level == "SENIOR":
+        for course in all_courses_registered:
+            for num in range(400, 500):
+                if str(num) in course.courses.course_code:
+                    courses_registered.append(course)
+
+    grades = {}
+    for course in courses_registered:
+        try:
+            continous_assessment = ContinousAssessment.objects.filter(user=student).get(course=course.courses)
+            result[course.courses.course_code] = {
+                'course_code': course.courses.course_code,
+                'course_title': course.courses.course_title,
+                'course_unit': course.courses.course_unit,
+                'continous_assessment': continous_assessment.ca_total,
+                'exam_score': continous_assessment.exam_total,
+                'total_score': continous_assessment.total
+            }
+            if continous_assessment.total in range(0, 40):
+                result[course.courses.course_code]['grade_letter'] = "F"
+            elif continous_assessment.total in range(40, 45):
+                result[course.courses.course_code]['grade_letter'] = "E"
+            elif continous_assessment.total in range(45, 50):
+                result[course.courses.course_code]['grade_letter'] = "D"
+            elif continous_assessment.total in range(50, 60):
+                result[course.courses.course_code]['grade_letter'] = "C"
+            elif continous_assessment.total in range(60, 70):
+                result[course.courses.course_code]['grade_letter'] = "B"
+            elif continous_assessment.total in range(70, 101):
+                result[course.courses.course_code]['grade_letter'] = "A"
+
+            grade_object = None
+            if continous_assessment.level == "Freshman (100)":
+                grade_object = StudentGrade.objects.filter(user=student).filter(level="FRESHMAN")
+            elif continous_assessment.level == "Sophomore (200)":
+                grade_object = StudentGrade.objects.filter(user=student).filter(level="SOPHOMORE")
+            elif continous_assessment.level == "Junior (300)":
+                grade_object = StudentGrade.objects.filter(user=student).filter(level="JUNIOR")
+            elif continous_assessment.level == "Senior (400)":
+                grade_object = StudentGrade.objects.filter(user=student).filter(level="SENIOR")
+
+            grades["level"] = continous_assessment.level
+            grades["semester"] = continous_assessment.semester
+            try:
+                grades["first_semester"] = grade_object.get(semester='First Semester').gpa
+                grades['cgpa'] = grade_object.get(semester="First Semester").cgpa
+            except ObjectDoesNotExist:
+                grades['first_semester'] = '--'
+                grades['cgpa'] = '--'
+                
+            try:
+                grades["second_semester"] = grade_object.get(semester='Second Semester').gpa
+                grades['cgpa'] = grade_object.get(semester="Second Semester").cgpa
+            except ObjectDoesNotExist:
+                grades['second_semester'] = '--'
+                grades['cgpa'] = '--'
+
+        except ObjectDoesNotExist:
+            result[course.courses.course_code] = {
+                'course_code': course.courses.course_code,
+                'course_title': course.courses.course_title,
+                'course_unit': course.courses.course_unit,
+                'continous_assessment': "--",
+                'exam_score': "--",
+                'total_score': "--",
+                'grade_letter': "--"
+            }
+
+    # BASE_DIR = Path(__file__).resolve().parent.parent
+    
+    context = {
+        'result_object': result,
+        'grades': grades
+    }
+    return render(request, "result.html", context)

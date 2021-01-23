@@ -107,10 +107,10 @@
     <hr>
     <div class="row">
         <div style="font-weight: 700; font-size: 20px; text-align: center;" class="col-12">
-            <div>FACULTY OF NATURAL AND APPLIED SCIENCES</div>
-            <div>DEPARTMENT OF COMPUTER SCIENCE</div>
-            <div>2020/2021 Session</div>
-            <div>First Semester</div>
+            <div style="text-transform: uppercase;">{{ faculty }}</div>
+            <div style="text-transform: uppercase;">DEPARTMENT OF {{ department }}</div>
+            <div>{{ session }}</div>
+            <div>{{ semester }}</div>
             <br>
             <div style="font-size: 24px; text-decoration: underline;">RESULT MASTERSHEET</div>
             <br>
@@ -128,13 +128,9 @@
                     <th scope="col">TCU</th>
                     <th scope="col">GPA</th>
                     <th scope="col">CGPA</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
+                    {% for course in courses %}
+                    <th scope="col">{{ course.course_code }}</th>
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
@@ -145,31 +141,29 @@
                     <th scope="col"></th>
                     <th scope="col"></th>
                     <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
-                    <th scope="col">Course 1</th>
+                    {% for course in courses %}
+                    <th scope="col">{{ course.course_unit }} unit(s)</th>
+                    {% endfor %}
                 </tr>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    <td>Larry</td>
-                    <td>the Bird</td>
-                    <td>@twitter</td>
-                    <td>@twitter</td>
-                    <td>@twitter</td>
-                    <td>@twitter</td>
-                </tr>
+                {% if courses %}
+                    {% for key, result in results.items %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td style="font-weight: 600;">{{ result.name }}</td>
+                        <td style="font-weight: 600;">{{ result.matric_no }}</td>
+                        <td style="font-weight: 600;">{{ result.total_course_unit }}</td>
+                        <td style="font-weight: 600;">{{ result.grade_point_average }}</td>
+                        <td style="font-weight: 600;">{{ result.cumm_grade_point_average }}</td>
+                        {% for grade in result.grades %}
+                        <th scope="col">{{ grade }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
             </tbody>
         </table>
+        <div style="text-align: center; font-size: 14px; font-weight: 800; font-style: italic;">No student is in this department</div>
+        {% endif %}
     </div>
 </body>
 </html>

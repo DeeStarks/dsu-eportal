@@ -82,7 +82,13 @@
 
 <div class="main_body">
     <div class="body_title">SEMESTER AND SESSION SETTINGS</div>
-    <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+    <hr>
+    <div style="font-weight: 800; font-size: 16px; margin: 10px 0;">NOTE that:</div>
+    <ul>
+        <li style="font-size: 13px; font-weight: 600; font-style: italic; color: #1f1f1f;">Changing the semester will remove or change completely every students' information relating to the semester.</li>
+        <li style="font-size: 13px; font-weight: 600; font-style: italic; color: #1f1f1f;">Migrating to a new session above the current session will automatically change all students' level to their respective next levels, thereby assigning them their new courses. But senior (400 level) students' account will be deleted, thereby will no longer have access to the portal. </li>
+    </ul>
+    <hr>
     <form action="" method="POST">
         {% csrf_token %}
         <div style="border: 1px solid #00000052; padding: 50px; border-radius: 5px; background-color: rgb(0, 32, 90);">

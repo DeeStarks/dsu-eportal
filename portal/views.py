@@ -10,8 +10,7 @@ from django.contrib.auth.models import User
 from myapp.decorators import user_group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from user_profile.models import UserProfile
-from assessment.models import ContinousAssessment, CarryOver
-from user_profile.models import UserProfile
+from assessment.models import ContinousAssessment, CarryOver, StudentGrade
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 import os
@@ -169,16 +168,42 @@ def change_password(request):
 @login_required(login_url='authentication')
 @user_group(allowed_roles=['students'])
 def attendance(request):
-    return render(request, "attendance.html")
+    student_attendance_profile = {}
+
+    user = User.objects.get(username=request.user)
+    student_grade = StudentGrade.objects.filter(user=user)
+    last_two_grades = student_grade.reverse()[0:2]
+
+    for index, grade in enumerate(last_two_grades):
+        attendance = grade.attendance
+        attendance_percentage = int(round((attendance/100)*100))
+
+        student_attendance_profile[f"attendance0{str(index+1)}"] = {
+            "attendance_session": grade.session,
+            "attendance_semester": grade.semester,
+            "attendance_percentage": attendance_percentage
+        }
+
+    attendance_list = []
+    
+    for student_item in student_attendance_profile:
+        attendance_list.append(student_attendance_profile[student_item]["attendance_percentage"])
+
+    if attendance_list:
+        presence = round(((sum(attendance_list))/(len(attendance_list)*100))*100, 1)
+        absence = 100-presence
+        student_attendance_profile["presence"] = presence
+        student_attendance_profile["absence"] = absence
+    else:
+        student_attendance_profile["presence"] = 0
+        student_attendance_profile["absence"] = 100
+    student_attendance_profile["no_of_attendance"] = len(attendance_list)
+
+    return render(request, "attendance.html", student_attendance_profile)
 
 @login_required(login_url='authentication')
 def get_started(request):
     return render(request, "start.html")
-
-@login_required(login_url='authentication')
-@user_group(allowed_roles=['students'])
-def voucher(request):
-    return render(request, "voucher.html")
 
 def page404(request, url):
     return render(request, "404.html")

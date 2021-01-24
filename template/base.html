@@ -47,7 +47,6 @@
                             <a href="{% url 'courses' %}" class="{% if request.resolver_match.url_name == 'courses' %}active{% endif %}"><i class="fas fa-book"></i>Courses</a>
                             <a href="{% url 'records' %}" class="{% if request.resolver_match.url_name == 'records' %}active{% endif %}"><i class="fas fa-file-alt"></i>Records</a>
                             <a href="{% url 'profile' request.user.groups.all.0.name request.user.id request.user|lower %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}"><i class="fas fa-user"></i>Profile</a>
-                            <a href="{% url 'voucher' %}"  class="{% if request.resolver_match.url_name == 'voucher' %}active{% endif %}"><i class="fas fa-money-check"></i>Fee Voucher</a>
                             <a href="{% url 'table' %}" class="{% if request.resolver_match.url_name == 'table' %}active{% endif %}"><i class="fas fa-table"></i>Time Tables</a>
                             <a href="{% url 'library' %}" class="{% if request.resolver_match.url_name == 'library' %}active{% endif %}"><i class="fas fa-book-reader"></i>Digital Library</a>
                             <a href="{% url 'attendance' %}"  class="{% if request.resolver_match.url_name == 'attendance' %}active{% endif %}" class="`"><i class="fas fa-chart-bar"></i>Attendance</a>
@@ -88,7 +87,6 @@
                         <a href="{% url 'courses' %}" class="{% if request.resolver_match.url_name == 'courses' %}active{% endif %}"><i class="fas fa-book"></i>Courses</a>
                         <a href="{% url 'records' %}" class="{% if request.resolver_match.url_name == 'records' %}active{% endif %}"><i class="fas fa-file-alt"></i>Records</a>
                         <a href="{% url 'profile' request.user.groups.all.0.name request.user.id request.user|lower %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}"><i class="fas fa-user"></i>Profile</a>
-                        <a href="{% url 'voucher' %}"  class="{% if request.resolver_match.url_name == 'voucher' %}active{% endif %}"><i class="fas fa-money-check"></i>Fee Voucher</a>
                         <a href="{% url 'table' %}" class="{% if request.resolver_match.url_name == 'table' %}active{% endif %}"><i class="fas fa-table"></i>Time Tables</a>
                         <a href="{% url 'library' %}" class="{% if request.resolver_match.url_name == 'library' %}active{% endif %}"><i class="fas fa-book-reader"></i>Digital Library</a>
                         <a href="{% url 'attendance' %}"  class="{% if request.resolver_match.url_name == 'attendance' %}active{% endif %}"><i class="fas fa-chart-bar"></i>Attendance</a>

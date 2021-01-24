@@ -27,6 +27,11 @@ import courses.views as courses
 import assessment.views as assessment
 from django.contrib.auth import views as auth_views
 
+
+admin.site.site_header = "DeeStarks University Admin"
+admin.site.site_title = "DSU Admin Portal"
+admin.site.index_title = "Welcome to DeeStarks University Portal"
+
 urlpatterns = [
     path('administration/', admin.site.urls),
     path("authenticate", authentication.login_user, name="authentication"),
@@ -77,9 +82,8 @@ urlpatterns = [
     path("records", assessment.records, name="records"),
     path("result", assessment.result, name="result"),
     path("password/change", portal.change_password, name="change password"),
-
     path("attendance", portal.attendance, name="attendance"),
+
     path("start", portal.get_started, name="start"),
-    path("voucher", portal.voucher, name="voucher"),
     path("<str:url>", portal.page404, name="error404"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

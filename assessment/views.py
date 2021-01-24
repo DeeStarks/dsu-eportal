@@ -241,16 +241,33 @@ def scoresheet_upload(request, course_code):
                                                     user = User.objects.get(username=student_object)
                                                     student_ca = ContinousAssessment.objects.filter(user=user)
                                                     student_courses = StudentCourses.objects.filter(user=user)
+                                                    level = UserProfile.objects.get(user=user).level
 
                                                     total_course_unit = 0
                                                     for course in student_courses:
-                                                        total_course_unit += int(course.courses.course_unit)
+                                                        if level == "FRESHMAN":
+                                                            for num in range(100, 200):
+                                                                if str(num) in course.courses.course_code:
+                                                                    total_course_unit += int(course.courses.course_unit)
+                                                        elif level == "SOPHOMORE":
+                                                            for num in range(200, 300):
+                                                                if str(num) in course.courses.course_code:
+                                                                    total_course_unit += int(course.courses.course_unit)
+                                                        elif level == "JUNIOR":
+                                                            for num in range(300, 400):
+                                                                if str(num) in course.courses.course_code:
+                                                                    total_course_unit += int(course.courses.course_unit)
+                                                        elif level == "SENIOR":
+                                                            for num in range(400, 500):
+                                                                if str(num) in course.courses.course_code:
+                                                                    total_course_unit += int(course.courses.course_unit)
 
                                                     quality_point = 0
                                                     for grade in student_ca:
                                                         quality_point += grade.quality_point
-
-                                                    gpa = round((quality_point/total_course_unit), 1)
+                                                    gpa = None
+                                                    if total_course_unit != 0:
+                                                        gpa = round((quality_point/total_course_unit), 1)
 
                                                     attendance = int(students_grades[student_object]['attendance'])
                                                     level = UserProfile.objects.get(user=user).level
@@ -274,16 +291,28 @@ def scoresheet_upload(request, course_code):
                                                     if StudentGrade.objects.filter(user=user).filter(level=level).filter(semester=students_grades[student_object]['semester']).count() > 1:
                                                         StudentGrade.objects.filter(user=user).filter(level=level).filter(semester=students_grades[student_object]['semester'])[0].delete()
                                                     
-                                                    # Calculating and adding the cgpa
+                                                    # Calculating cgpa
                                                     total_gradings = []
                                                     for point in StudentGrade.objects.filter(user=user):
                                                         total_gradings.append(float(point.gpa))
                                                     
+                                                    # Calculating total attendance
+                                                    total_attendance = []
+                                                    for grade_attendance in StudentGrade.objects.filter(user=user):
+                                                        total_attendance.append(int(grade_attendance.attendance))
+                                                    
+                                                    max_attendance = len(total_attendance)*5
+                                                    student_attendance = (attendance/5)*100
+                                                    if max_attendance:
+                                                        student_attendance = (sum(total_attendance)/max_attendance)*100
+                                                    
+                                                    # Adding the CGPA and Attendance to students grades
                                                     cgpa = round((sum(total_gradings)/len(total_gradings)), 2)
                                                     print(total_gradings)
-                                                    add_cgpa = StudentGrade.objects.filter(user=user).filter(level=level).get(semester=students_grades[student_object]['semester'])
-                                                    add_cgpa.cgpa = cgpa
-                                                    add_cgpa.save()
+                                                    student_grade_object = StudentGrade.objects.filter(user=user).filter(level=level).get(semester=students_grades[student_object]['semester'])
+                                                    student_grade_object.cgpa = cgpa
+                                                    student_grade_object.attendance = student_attendance
+                                                    student_grade_object.save()
 
                                                 message['outcome'] = "Success!"
                                                 message['message'] = "Scoresheet uploaded!"

@@ -25,7 +25,10 @@
             padding: 0px 10px;
         }
         label{
-            display: none;
+            display: none !important;
+        }
+        .helptext{
+            display: none !important;
         }
     </style>
 </head>
@@ -72,7 +75,7 @@
 
         for (var field in form_fields){	
 			form_fields[field].className += ' login_form_control'
-		}
+        }
     </script>
     <script src="{% static 'js/main.js' %}"></script>
 </body>

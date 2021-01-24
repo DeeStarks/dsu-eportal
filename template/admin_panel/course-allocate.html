@@ -24,7 +24,7 @@
         background-color: #178a00;
     }
     .yellow{
-        background-color: #a59200;
+        background-color: #bd4c00;
     }
     #success{
         border-top: 1px solid #ffffff62;
@@ -94,7 +94,7 @@
 <div id="success_message" class="row {% if returned_object.color ==  'red' %}red{% elif returned_object.courses != '' %}yellow{% elif returned_object.color ==  'green' %}green{% endif %}">
     <div class="col-12 row">
         <div class="col-10 success_title">
-            {% if returned_object.courses != '' %}Inconclusive!{% else %}{{ returned_object.success }}{% endif %}
+            <i class="{% if returned_object.color == 'red' %}far fa-times-circle{% elif returned_object.courses != '' %}far fa-question-circle{% elif returned_object.color == 'green' %}far fa-check-circle{% endif %} mr-1"></i>{% if returned_object.courses != '' %}Inconclusive!{% else %}{{ returned_object.success }}{% endif %}
         </div>
         <div class="col-2 text-right" id="close">
             <i class="fas fa-times"></i>

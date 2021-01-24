@@ -91,7 +91,7 @@
 <div id="success_message" class="row {% if info_object.color == 'red' %}red{% elif info_object.color == 'green' %}green{% endif %}">
     <div class="col-12 row">
         <div class="col-10 success_title">
-            {{ info_object.success }}
+            <i class="{% if info_object.color == 'red' %}far fa-times-circle{% elif info_object.color == 'green' %}far fa-check-circle{% endif %} mr-1"></i>{{ info_object.success }}
         </div>
         <div class="col-2 text-right" id="close">
             <i class="fas fa-times"></i>

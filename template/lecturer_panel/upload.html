@@ -64,7 +64,7 @@
 <div id="success_message" class="row {% if message.color == 'red' %}red{% elif message.color == 'green' %}green{% endif %}">
     <div class="col-12 row">
         <div class="col-10 success_title">
-            {{ message.outcome }}
+            <i class="{% if message.color == 'red' %}far fa-times-circle{% elif message.color == 'green' %}far fa-check-circle{% endif %} mr-1"></i>{{ message.outcome }}
         </div>
         <div class="col-2 text-right" id="close">
             <i class="fas fa-times"></i>

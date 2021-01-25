@@ -45,28 +45,35 @@
                 <canvas id="adminChart02" height="250"></canvas>
             </div>
         </div>
-        <div class="col-sm-12 col-lg-4 p-3">
+        <div class="col-sm-12 col-md-6 p-3">
             <div class="admin_base">
-                <div class="dash_cat_title">All Registered Students</div>
+                <div class="dash_cat_title">Registered Students</div>
                 <hr>
                 <div class="dash_cat_details">{{ students_word_count|title }}({{ students_num_count }})</div>
             </div>
         </div>
-        <div class="col-sm-12 col-lg-4 p-3">
+        <div class="col-sm-12 col-md-6 p-3">
             <div class="admin_base">
-                <div class="dash_cat_title">All Registered Lecturers</div>
+                <div class="dash_cat_title">Registered Lecturers</div>
                 <hr>
                 <div class="dash_cat_details">{{ staff_word_count|title }}({{ staff_num_count }})</div>
             </div>
         </div>
-        <div class="col-sm-12 col-lg-4 p-3">
+        <div class="col-sm-12 col-md-6 p-3">
             <div class="admin_base">
-                <div class="dash_cat_title">All Courses</div>
+                <div class="dash_cat_title">Available Courses</div>
                 <hr>
                 <div class="dash_cat_details">{{ course_word_count|title }}({{ course_num_count }})</div>
             </div>
         </div>
-        <div class="col-sm-12 col-lg-4 p-3">
+        <div class="col-sm-12 col-md-6 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">Carry Over Students</div>
+                <hr>
+                <div class="dash_cat_details">{{ carryover_word_count|title }}({{ carryover_num_count }})</div>
+            </div>
+        </div>
+        <!-- <div class="col-sm-12 col-lg-4 p-3">
             <div class="admin_base">
                 <div class="dash_cat_title">1st Class Students</div>
                 <hr>
@@ -79,14 +86,7 @@
                 <hr>
                 <div class="dash_cat_details">Not added yet</div>
             </div>
-        </div>
-        <div class="col-sm-12 col-lg-4 p-3">
-            <div class="admin_base">
-                <div class="dash_cat_title">Carry Over Students</div>
-                <hr>
-                <div class="dash_cat_details">{{ carryover_word_count|title }}({{ carryover_num_count }})</div>
-            </div>
-        </div>
+        </div> -->
     </div>
 </div>
 <script>

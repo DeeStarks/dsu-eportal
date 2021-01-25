@@ -1,4 +1,4 @@
-# Student Management System (still in development)
+# Student Management System
 This is a Simple Student Management System E-Portal Project created for Educational Purpose using Python (Django).
 
 Feel free to make changes. And if you love the project, do ADD a STAR ⭐️.

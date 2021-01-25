@@ -33,3 +33,6 @@ class CarryOver(models.Model):
 # Very Important for storing already uploaded scoresheets' names
 class UploadedScoresheets(models.Model):
     sheet_name = models.CharField(max_length=100, null=True, blank=True)
+
+class ReleaseResult(models.Model):
+    release_result = models.BooleanField(default=False)

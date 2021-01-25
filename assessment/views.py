@@ -14,7 +14,7 @@ import csv
 from session_semester.models import SessionAndSemester
 from user_profile.models import StudentCourses, UserProfile, DEPARTMENT
 from courses.models import Course
-from .models import ContinousAssessment, StudentGrade, UploadedScoresheets, CarryOver
+from .models import ContinousAssessment, StudentGrade, UploadedScoresheets, CarryOver, ReleaseResult
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
@@ -348,8 +348,36 @@ def mastersheet(request, *args, **kwargs):
         for departments in department_obj[1]:
             all_departments.append(departments[1])
     
+    if request.method == "POST":
+        release = request.POST.get("release_result")
+        release_queryset = ReleaseResult.objects.all()
+        if release == "True":
+            if release_queryset.exists():
+                release_object = release_queryset[0]
+                release_object.release_result = True
+                release_object.save()
+            else:
+                ReleaseResult.objects.create(
+                    release_result=True
+                )
+        elif release == "False":
+            if release_queryset.exists():
+                release_object = release_queryset[0]
+                release_object.release_result = False
+                release_object.save()
+            else:
+                ReleaseResult.objects.create(
+                    release_result=False
+                )
+
+    release_result = False
+    if ReleaseResult.objects.all().exists():
+        release_result = ReleaseResult.objects.all()[0].release_result
+
+    
     context = {
-        "departments": all_departments
+        "departments": all_departments,
+        "release_result": release_result
     }
     return render(request, 'admin_panel/mastersheet.html', context)
     
@@ -545,6 +573,11 @@ def result(request):
     level = UserProfile.objects.get(user=student).level
     courses_registered = []
     all_courses_registered = StudentCourses.objects.filter(user=student).order_by('courses__course_code')
+    release_result = False
+    release_queryset = ReleaseResult.objects.all()
+    if release_queryset.exists():
+        release_result = release_queryset[0].release_result
+
     if level == "FRESHMAN":
         for course in all_courses_registered:
             for num in range(100, 200):
@@ -627,11 +660,12 @@ def result(request):
                 'total_score': "--",
                 'grade_letter': "--"
             }
-
-    # BASE_DIR = Path(__file__).resolve().parent.parent
+    
     
     context = {
         'result_object': result,
-        'grades': grades
+        'grades': grades,
+        'carry_over': CarryOver.objects.filter(user=student),
+        'release_result': release_result
     }
     return render(request, "result.html", context)

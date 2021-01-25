@@ -6,6 +6,7 @@
 <div class="main_body result">
     <div class="body_title">YOUR RESULT</div>
     <hr>
+    {% if release_result %}
     <div class="result-info">
         <p style="font-size: 15px"><span class="font-weight-bold">Level</span> - {{ grades.level }}</p>
         <p style="font-size: 15px"><span class="font-weight-bold">Semester</span> - {{ grades.semester }}</p>
@@ -62,6 +63,21 @@
                     </tbody>
                 </table>
             </div>
+            <table>
+                <tr>
+                    <td style="font-size: 13px; font-weight: 600">No. of carry overs: <span style="font-size: 15px; font-weight: bold">{{ carry_over|length }}</span></td>
+                    <td>
+                        <div style="font-size: 13px; font-weight: 600; padding-bottom: 5px; margin-bottom: 5px; border-bottom: 1px solid #00000025;">Carry over courses:</div>
+                        {% if carry_over %}
+                        {% for course in carry_over %}
+                        <div style="font-size: 15px; font-weight: bold">{{ course.course.course_code }}</div>
+                        {% endfor %}
+                        {% else %}
+                        <div style="font-size: 15px; font-weight: bold">YOU HAVE NO CARRY OVERS</div>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
             <div class="tbl-foot">
                 <table cellpadding="0" cellspacing="0" border="0" width="100%">
                     <tr>
@@ -90,6 +106,9 @@
             </tr>
         </table>
     </div>
+    {% else %}
+    <div style="text-align: center; font-weight: 600; font-size: 13px; font-style: italic;">Your result is yet to be released.</div>
+    {% endif %}
 </div>
 
 {% endblock %}

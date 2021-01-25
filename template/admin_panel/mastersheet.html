@@ -30,6 +30,18 @@
 <div class="main_body">
     <div class="body_title">RESULT MASTERSHEET</div>
     <hr>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" value="True" name="release_result" style="display: none;">
+        <button type="submit" class="btn btn-primary" style="font-size: 13px; padding: 5px 10px;">Release Students' Results</button> {% if release_result %}<i class="fas fa-check"></i>{% endif %}
+    </form>
+    <br>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" value="False" name="release_result" style="display: none;">
+        <button type="submit" class="btn btn-primary" style="font-size: 13px; padding: 5px 10px;">Unrelease Students' Results</button> {% if not release_result %}<i class="fas fa-check"></i>{% endif %}
+    </form>
+    <hr>
     <div class="row">
         <div class="col-md-6 col-sm-12 p-2">
             <div style=" background-color: #00000009; box-shadow: 0px 2px 2px #00000079; padding: 20px; font-size: 13px; font-weight: 600;">

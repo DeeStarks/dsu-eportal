@@ -105,13 +105,19 @@ def scoresheet_upload(request, course_code):
 
     if request.method == "POST":
         sheet = None
+        renamed_sheet = None
         if request.FILES:
             sheet = request.FILES.get('sheet')
+            for i in range(1000):
+                if sheet.name.split('.')[0].endswith(f" ({i})"):
+                    renamed_sheet = sheet.name.replace(f" ({i})", '')
+            if renamed_sheet:
+                sheet.name = renamed_sheet
 
         if sheet != None:
             if sheet.name.endswith(".csv"):
                 available_sheets = [sheet.sheet_name for sheet in UploadedScoresheets.objects.all()]
-                if sheet.name in available_sheets:
+                if renamed_sheet in available_sheets:
                     message['outcome'] = "Failed!"
                     message['message'] = "Oops! The scoresheet you uploaded already exists and it can no longer be updated. If you need to make changes, contact an Admin!"
                     message['color'] = "red"
@@ -125,6 +131,14 @@ def scoresheet_upload(request, course_code):
                         if scoresheet_course_code != course_code:
                             message['outcome'] = "Failed!"
                             message['message'] = f"You uploaded a scoresheet with course code - {scoresheet_course_code}, instead of {course_code}"
+                            message['color'] = "red"
+                        elif scoresheet_session != session__semester.session:
+                            message['outcome'] = "Failed!"
+                            message['message'] = f"You uploaded a scoresheet with another session."
+                            message['color'] = "red"
+                        elif scoresheet_semester != session__semester.semester:
+                            message['outcome'] = "Failed!"
+                            message['message'] = f"You uploaded a scoresheet with another semester."
                             message['color'] = "red"
                         else:
                             sheet_decode = io.TextIOWrapper(sheet.file, encoding='utf-8 ', errors='replace')

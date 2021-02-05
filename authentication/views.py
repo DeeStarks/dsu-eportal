@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout
 from .forms import AuthenticateUser, CreateUser
 from myapp.decorators import authenticated_user, user_group
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 # Create your views here.
 @authenticated_user
@@ -38,6 +39,8 @@ def create_user(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            email = form.cleaned_data.get('email')
             acct_type = request.POST.get('user_group')
             group = None
             if acct_type == None:
@@ -47,9 +50,49 @@ def create_user(request):
 
 
             user.groups.add(group)
-            success = f"Account created for {username} Successfully."
             user_object = User.objects.get(username=username)
             form = CreateUser()
+            success = f"Account created for {username} Successfully."
+            if acct_type == 'students':
+                send_mail(
+                    'Welcome to DeeStarks University', 
+                    f'''
+We congratulate you on your admission to this great Citadel of Learning.
+
+You account has been created on the school portal successfully and here is your login details below:
+
+Matric No: {username}
+Password: {password}
+
+You can change your password when you login to the portal.
+
+
+
+- DeeStarks University Admin.
+                    ''', 
+                    'danielonoja246@zohomail.com', 
+                    [email,]
+                )
+            elif acct_type == 'staff' or acct_type == 'admin':
+                send_mail(
+                    'Welcome to DeeStarks University', 
+                    f'''
+We thank and congratulate you for being a part of this great Citadel of Learning.
+
+You account has been created on the school portal successfully and here is your login details below:
+
+Username: {username}
+Password: {password}
+
+You can change your password when you login to the portal.
+
+
+
+- DeeStarks University Admin.
+                    ''', 
+                    'danielonoja246@zohomail.com', 
+                    [email,]
+                )
         else:
             all__users = User.objects.all()
             if request.POST.get('username') in [user.username for user in all__users]:

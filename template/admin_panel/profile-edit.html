@@ -231,8 +231,9 @@
                 </div>
                 <div class="col-md-9 col-sm-12">
                     <select name="degree" required>
-                        <option {% ifequal user.userprofile.degree 'UNDERGRADUATE' %}selected{% endifequal %} value="UNDERGRADUATE">Undergraduate</option>
-                        <option {% ifequal user.userprofile.degree 'POSTGRADUATE' %}selected{% endifequal %} value="POSTGRADUATE">Postgraduate</option>
+                        {% for degree in degrees %}
+                        <option {% ifequal user.userprofile.degree degree.0 %}selected{% endifequal %} value="{{degree.0}}">{{ degree.1 }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -243,12 +244,9 @@
                 </div>
                 <div class="col-md-9 col-sm-12">
                     <select name="level" required>
-                        <option value="FRESHMAN" {% ifequal user.userprofile.level 'FRESHMAN' %}selected{% endifequal %}>Freshman (100)</option>
-                        <option {% ifequal user.userprofile.level 'SOPHOMORE' %}selected{% endifequal %} value="SOPHOMORE">Sophomore (200)</option>
-                        <option {% ifequal user.userprofile.level 'JUNIOR' %}selected{% endifequal %} value="JUNIOR">Junior (300)</option>
-                        <option {% ifequal user.userprofile.level 'SENIOR' %}selected{% endifequal %} value="SENIOR">Senior (400)</option>
-                        <option {% ifequal user.userprofile.level 'M-POSTGRADUATE' %}selected{% endifequal %} value="M-POSTGRADUATE">Postgraduate (M.Sc)</option>
-                        <option {% ifequal user.userprofile.level 'P-POSTGRADUATE' %}selected{% endifequal %} value="P-POSTGRADUATE">Postgraduate (P.Hd)</option>
+                        {% for level in levels %}
+                        <option value="{{ level.0 }}" {% ifequal user.userprofile.level level.0 %}selected{% endifequal %}>{{ level.1 }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -259,8 +257,9 @@
                 </div>
                 <div class="col-md-9 col-sm-12">
                     <select name="faculty" required>
-                        <option {% ifequal user.userprofile.faculty 'SCIENCE' %}selected{% endifequal %} value="SCIENCE">Faculty of Science</option>
-                        <option {% ifequal user.userprofile.faculty 'ART' %}selected{% endifequal %} value="ART">Faculty of Art</option>
+                        {% for faculty in faculties %}
+                        <option {% ifequal user.userprofile.faculty faculty.0 %}selected{% endifequal %} value="{{ faculty.0 }}">{{ faculty.1 }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -271,25 +270,9 @@
                 </div>
                 <div class="col-md-9 col-sm-12">
                     <select name="department" required>
-                        <option disabled><strong>--------FACULTY OF SCIENCE--------</strong></option>
-                        <option {% ifequal user.userprofile.department 'BIOCHEMISTRY' %}selected{% endifequal %} value="BIOCHEMISTRY">Biochemistry</option>
-                        <option {% ifequal user.userprofile.department 'BOTANY' %}selected{% endifequal %} value="BOTANY">Botany</option>
-                        <option {% ifequal user.userprofile.department 'CHEMISTRY' %}selected{% endifequal %} value="CHEMISTRY">Chemistry</option>
-                        <option {% ifequal user.userprofile.department 'COMPUTER_SCIENCE' %}selected{% endifequal %} value="COMPUTER_SCIENCE">Computer Science</option>
-                        <option {% ifequal user.userprofile.department 'GEOSCIENCE' %}selected{% endifequal %} value="GEOSCIENCE">Geoscience</option>
-                        <option {% ifequal user.userprofile.department 'MATHEMATICS' %}selected{% endifequal %} value="MATHEMATICS">Mathematics</option>
-                        <option {% ifequal user.userprofile.department 'MARINE_SCIENCE' %}selected{% endifequal %} value="MARINE_SCIENCE">Marine Science</option>
-                        <option {% ifequal user.userprofile.department 'MICROBIOLOGY' %}selected{% endifequal %} value="MICROBIOLOGY">Microbiology</option>
-                        <option {% ifequal user.userprofile.department 'ZOOLOGY' %}selected{% endifequal %} value="ZOOLOGY">Zoology</option>
-                        <option {% ifequal user.userprofile.department 'PHYSICS' %}selected{% endifequal %} value="PHYSICS">Physics</option>
-                        <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
-                        <option disabled><strong>--------FACULTY OF ART--------</strong></option>
-                        <option {% ifequal user.userprofile.department 'CREATIVE_ART' %}selected{% endifequal %} value="CREATIVE_ART">Creative Art</option>
-                        <option {% ifequal user.userprofile.department 'ENGLISH' %}selected{% endifequal %} value="ENGLISH">English</option>
-                        <option {% ifequal user.userprofile.department 'EUROPEAN_LANGUAGE' %}selected{% endifequal %} value="EUROPEAN_LANGUAGE">European Languages & Integration Studies</option>
-                        <option {% ifequal user.userprofile.department 'HISTORY' %}selected{% endifequal %} value="HISTORY">History & Strategic Studies</option>
-                        <option {% ifequal user.userprofile.department 'LINGUISTICS' %}selected{% endifequal %} value="LINGUISTICS">Linguistics African Asian Studies</option>
-                        <option {% ifequal user.userprofile.department 'PHILOSOPHY' %}selected{% endifequal %} value="PHILOSOPHY">Philosophy</option>
+                        {% for department in departments %}
+                        <option {% ifequal user.userprofile.department department.0 %}selected{% endifequal %} value="{{ department.0 }}">{{ department.1 }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>

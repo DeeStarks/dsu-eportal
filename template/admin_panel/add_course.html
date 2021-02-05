@@ -160,25 +160,9 @@
                     <div class="col-md-8 col-sm-12">
                         <select name="department" id="department">
                             <option disabled selected>---</option>
-                            <option disabled><strong>--------FACULTY OF SCIENCE--------</strong></option>
-                            <option value="BIOCHEMISTRY">Biochemistry</option>
-                            <option value="BOTANY">Botany</option>
-                            <option value="CHEMISTRY">Chemistry</option>
-                            <option value="COMPUTER_SCIENCE">Computer Science</option>
-                            <option value="GEOSCIENCE">Geoscience</option>
-                            <option value="MATHEMATICS">Mathematics</option>
-                            <option value="MARINE_SCIENCE">Marine Science</option>
-                            <option value="MICROBIOLOGY">Microbiology</option>
-                            <option value="ZOOLOGY">Zoology</option>
-                            <option value="PHYSICS">Physics</option>
-                            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
-                            <option disabled><strong>--------FACULTY OF ART--------</strong></option>
-                            <option value="CREATIVE_ART">Creative Art</option>
-                            <option value="ENGLISH">English</option>
-                            <option value="EUROPEAN_LANGUAGE">European Languages & Integration Studies</option>
-                            <option value="HISTORY">History & Strategic Studies</option>
-                            <option value="LINGUISTICS">Linguistics African Asian Studies</option>
-                            <option value="PHILOSOPHY">Philosophy</option>
+                            {% for department in departments %}
+                            <option value="{{ department.0 }}">{{ department.1 }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>

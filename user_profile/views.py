@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from myapp.decorators import user_group
 from django.contrib.auth.models import User
-from .models import UserProfile, StudentCourses
+from .models import UserProfile, StudentCourses, DEGREE, LEVEL, FACULTY, DEPARTMENT
 from PIL import Image
 from courses.models import Course
 
@@ -184,12 +184,15 @@ def update_profile(request, user_id, user_name):
                 user_profile.save()
             success = "Your account was updated!"
 
-
     context = {
         'user': user,
         'user_object': user_course_object,
         'user_course_list': [object.courses.course_code for object in user_course_object],
         'success': success,
-        'elective_courses': Course.objects.filter(grouping='ELECTIVE')
+        'elective_courses': Course.objects.filter(grouping='ELECTIVE'),
+        "degrees": DEGREE,
+        "levels": LEVEL,
+        "faculties": FACULTY,
+        "departments": [department for faculty in DEPARTMENT for department in faculty[1]]
     }
     return render(request, 'admin_panel/profile-edit.html', context)

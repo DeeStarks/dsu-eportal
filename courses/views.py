@@ -3,7 +3,7 @@ from .models import Course, CourseAllocation
 from django.contrib.auth.decorators import login_required
 from myapp.decorators import user_group
 from django.contrib.auth.models import User, Group
-from user_profile.models import StudentCourses, UserProfile
+from user_profile.models import StudentCourses, UserProfile, DEPARTMENT
 
 # Create your views here.
 @login_required(login_url='authentication')
@@ -24,7 +24,7 @@ def add_course(request):
         "color": '',
         "message": ''
     }
-    print([course.course_code for course in Course.objects.filter(grouping='CORE').filter(department='COMPUTER_SCIENCE')])
+    
     add_course_msg = ''
     course_list = []
     for course in Course.objects.all():
@@ -110,9 +110,11 @@ def add_course(request):
             returned_object["color"] = "red"
             returned_object["message"] = "Course already exists"
 
+    department_vals = [department for faculty in DEPARTMENT for department in faculty[1]]
 
     context = {
-        'info_object': returned_object
+        'info_object': returned_object,
+        'departments': department_vals
     }
     return render(request, "admin_panel/add_course.html", context)
 

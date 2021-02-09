@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<div class="main_body courses">
+    <div class="body_title">REGISTERED COURSES</div>
+    <hr>
+    <section class="pt-5 courses-table">
+        <div id="courses">
+            <div class="tbl-header pr-3">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <col style="width:5%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Course Code</th>
+                            <th>Course Title</th>
+                            <th>Course Units</th>
+                            <th>Grouping</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="tbl-content">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-light table-striped">
+                    <col style="width:5%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <col style="width:23.75%">
+                    <tbody>
+                        {% if not user_courses %}
+                        <div style="width: 100%; text-align: center; font-size: 13px; font-weight: 700; padding: 20px; font-style: italic;">You don't have any course</div>
+                        {% else %}
+                        {% for course in user_courses %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ course.courses.course_code }}</td>
+                            <td>{{ course.courses.course_title }}</td>
+                            <td>{{ course.courses.course_unit }}</td>
+                            <td>{{ course.courses.get_grouping_display }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tbl-foot">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td style="font-weight: 700; font-size: 15px;">Total Units: {{ total_unit }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

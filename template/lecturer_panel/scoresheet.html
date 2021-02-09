@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<div class="main_body scoresheet">
+    <div class="body_title">Upload Scoresheet</div>
+    <hr>
+    <div class="d-flex justify-content-center w-100 h-50 bg-light p-5">
+        <div class="card">
+            <div id="dropdown">Select Course <i class="fas fa-chevron-down"></i></div>
+            <div id="dropdown_menu">
+                <div>
+                    {% if courses.exists %}
+                        {% for object in courses %}
+                            <a href="{% url 'scoresheet upload' object.course.course_code %}">{{ object.course.course_code }}</a>
+                        {% endfor %}
+                    {% else %}
+                        <div style="color: white; font-size: 13px; font-style: italic; margin: 10px; text-align: center; font-weight: 600;">You've not been assigned any course.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ json }}
+</div>
+{% endblock %}

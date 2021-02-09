@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<div class="main_body attendance">
+    <div class="body_title text-uppercase">YOUR {% if no_of_attendance == 0 %}{% elif no_of_attendance == 1 %}LAST SEMESTER'S {% elif no_of_attendance == 2 %}LAST TWO SEMESTERS'{% endif %} ATTENDANCE</div>
+    <hr>
+    <div class="row att">
+        <div class="complete_att02 col-lg-8 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="att_title">Attendance</div>
+                </div>
+                <div class="col-12">
+                    <canvas id="complete_att02" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="complete_att01 col-lg-4 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="att_title">Total Attendance by Percentage</div>
+                </div>
+                <div class="col-12">
+                    <canvas id="complete_att01" width="1000" height="1000"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Attendance Charts
+    let complete_att01 = document.getElementById("complete_att01").getContext('2d');
+    let complete_att02 = document.getElementById("complete_att02").getContext('2d');
+
+    let complete01 = new Chart(complete_att01, {
+        type: 'pie',
+        data: {
+            labels: ["Presence: {{ presence }}%", "Absence: {{ absence }}%"],
+            datasets: [{
+                label: 'Percentage',
+                data: ["{{ presence }}", "{{ absence }}"],
+                backgroundColor: [
+                    '#00ff1e',
+                    '#ff6347'
+                ],
+                fill: false,
+                borderColor: 'transparent',
+                borderWidth: 2,
+                weight: 2
+            }]
+        },
+        options: {}
+    })
+
+    let complete02 = new Chart(complete_att02, {
+        type: 'horizontalBar',
+        data: {
+            labels: [
+                ['{{ attendance01.attendance_session }}', '{{ attendance01.attendance_semester }}'], 
+                ['{{ attendance02.attendance_session }}', '{{ attendance02.attendance_semester }}']
+            ],
+            datasets: [{
+                label: 'Percentage',
+                data: ["{{ attendance01.attendance_percentage }}", "{{ attendance02.attendance_percentage }}"],
+                backgroundColor: '#ff63479e',
+                fill: false,
+                borderColor: '#ff6347',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    display: true,
+                    ticks: {
+                        beginAtZero: true,
+                        steps: 5,
+                        max: 100
+                    }
+                }]
+            }
+        }
+    })
+</script>
+{% endblock %}

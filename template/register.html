@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block page_content %}
+<head>
+    <style>
+        .login_form_control {
+            background:none;
+            border:none;
+            font-size: 13px;
+            border-bottom:2px solid #ffffff7c;
+            border-radius:0;
+            box-shadow:none;
+            outline:none;
+            color:white;
+            width: 100%;
+            line-height: 40px;
+            padding: 0px 10px;
+        }
+        .label{
+            color: white;
+            font-size: 13px;
+        }
+        .password_warning{
+            font-size: 13px;
+        }
+        select{
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid #ffffff88;
+            background-color: transparent;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        @media(max-width: 500px){
+            select{
+                width: 100%;
+            }
+        }
+        select option{
+            color: black;
+        }
+        button{
+            color: white;
+            background-color: #00205a;
+            border: 2px solid #ffffff88;
+            outline: none;
+            padding: 10px 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 200ms;
+        }
+        button:hover{
+            background-color: white;
+            color: #00205a;
+        }
+        .success_title{
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        #success_message{
+            background-color: #178a00;
+            color: #ffffff;
+            font-size: 13px;
+            position: fixed;
+            width: 300px;
+            padding: 10px;
+            top: 100px;
+            right: -500px;
+            z-index: 5;
+        }
+        #success{
+            border-top: 1px solid #ffffff62;
+            padding: 10px 20px;
+        }
+        #close{
+            font-size: 15px;
+            width: 100%;
+            line-height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+{% if user_object.groups.all.0.name == 'students' or user_object.groups.all.0.name == 'staff' %}
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ success }}</div>
+    <div class="col-12">Click <a href="{% url 'update profile' user_object.id user_object.username %}" style="text-decoration: underline; color: rgba(255, 255, 255, 0.692);">here</a> to edit {{ user_object.username }}'s profile.</div>
+</div>
+{% elif user_object.groups.all.0.name == 'admin' %}
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ success }}</div>
+</div>
+{% endif %}
+
+<div class="main_body">
+    <div class="body_title">ADD NEW USER</div>
+    <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div style="border: 1px solid #00000052; padding: 50px; border-radius: 5px; background-color: rgb(0, 32, 90);">
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Account Type: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="user_group" required>
+                        <option selected="selected" disabled>---</option>
+                        <option value="admin">Admin</option>
+                        <option value="staff">Staff</option>
+                        <option value="students">Student</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Username/Matric No: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    {{ form.username }}
+                    <div class="text-danger" style="font-size: 13px; line-height: 30px;">{{ error.username }}</div>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    First Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    {{ form.first_name }}
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Last Name: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Email: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    {{ form.email }}
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Password: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    {{ form.password1 }}
+                    <div class="password_warning p-3 text-danger row">
+                        <div class="col-2">Note:</div>
+                        <div class="col-10">
+                            <ul>
+                                <li>Password can’t be too similar to other personal information.</li>
+                                <li>Password must contain at least Eight(8) characters.</li>
+                                <li>Password can't be entirely numeric.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Confirm Password: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    {{ form.password2 }}
+                    <div class="text-danger" style="font-size: 13px; line-height: 30px;">{{ error.password }}</div>
+                </div>
+            </div>
+            <div style="color: #ffffffd5; font-size: 12px; font-style: italic; text-align: center; font-weight: 500;">Can't think of a password? Click <a href="https://www.passwordsgenerator.net/" target="_blank"  style="color: #ffffff90; text-decoration: underline;">here</a> to generate one.</div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="col-md-9 col-sm-12"></div>
+                <div class="label col-md-3 col-sm-12">
+                    <button type="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    let form_fields = document.getElementsByTagName("input")
+    for (var field in form_fields){	
+        form_fields[field].className += ' login_form_control'
+    }
+
+    window.onload = (event) => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<div class="main_body timetable">
+    <div class="body_title">SCHEDULE OF EXAMS AND CLASSES</div>
+    <hr>
+    <div class="row">
+        {% if timetable__queryset.exists %}
+            {% for timetable in timetable__queryset %}
+            <div class="col-12 row my-0">
+                <div class="col-md-3 col-sm-12 px-3 font-weight-bold">{% if timetable.date_added.split.0 == month and timetable.date_added.split.1 == day and timetable.date_added.split.2 == year %}Today, {{ timetable.date_added.split.3 }} {{ timetable.date_added.split.4|lower }}{% else %}{{ timetable.date_added }}{% endif %}</div>
+                <div class="col-md-6 col-sm-12 px-3">
+                    {% if timetable.get_course_display|title == "None" %}{% else %}{{ timetable.get_course_display|upper }}{% endif %} {{ timetable.get_type_display|title }} for {% if timetable.get_semester_display|title == "None" %}{% else %}{{ timetable.get_semester_display|title }}, {% endif %}{{ timetable.get_session_display|title }}.</div>
+                <div class="col-md-3 col-sm-12 px-3"><a href="{{ timetable.file.url }}" download>Download <i class="far fa-arrow-alt-circle-down"></i></a></div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="font-weight: bold; font-style: italic; width: 100%; text-align: center; color: #0000007b;">No timetable</div>
+        {% endif %}
+</div>
+
+{% endblock %}

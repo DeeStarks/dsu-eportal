@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    .success_title{
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    #success_message{
+        background-color: #178a00;
+        color: #ffffff;
+        font-size: 13px;
+        position: fixed;
+        width: 300px;
+        padding: 10px;
+        top: 100px;
+        right: -500px;
+        z-index: 5;
+    }
+    #success{
+        border-top: 1px solid #ffffff62;
+        padding: 10px 20px;
+    }
+    #close{
+        font-size: 15px;
+        width: 100%;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    .label{
+        color: white;
+        font-size: 13px;
+    }
+    select{
+        padding: 10px 20px;
+        border: none;
+        outline: none;
+        border-bottom: 2px solid #ffffff88;
+        background-color: transparent;
+        color: white;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    @media(max-width: 500px){
+        select{
+            width: 100%;
+        }
+    }
+    select option{
+        color: black;
+    }
+    button{
+        color: white;
+        background-color: #00205a;
+        border: 2px solid #ffffff88;
+        outline: none;
+        padding: 10px 30px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 200ms;
+    }
+    button:hover{
+        background-color: white;
+        color: #00205a;
+    }
+</style>
+
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            <i class="far fa-check-circle mr-1"></i>Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ success }}</div>
+</div>
+
+
+<div class="main_body">
+    <div class="body_title">SEMESTER AND SESSION SETTINGS</div>
+    <hr>
+    <div style="font-weight: 800; font-size: 16px; margin: 10px 0;">NOTE that:</div>
+    <ul>
+        <li style="font-size: 13px; font-weight: 600; font-style: italic; color: #1f1f1f;">Changing the semester will remove or change completely every students' information relating to the semester.</li>
+        <li style="font-size: 13px; font-weight: 600; font-style: italic; color: #1f1f1f;">Migrating to a new session above the current session will automatically change all students' level to their respective next levels, thereby assigning them their new courses. But senior (400 level) students' account will be deleted, thereby will no longer have access to the portal. </li>
+    </ul>
+    <hr>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div style="border: 1px solid #00000052; padding: 50px; border-radius: 5px; background-color: rgb(0, 32, 90);">
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Current Semester: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="semester" required>
+                        <option {% ifequal session__semester.semester 'FIRST_SEMESTER' %}selected{% endifequal %} value="FIRST_SEMESTER">First Semester</option>
+                        <option {% ifequal session__semester.semester 'SECOND_SEMESTER' %}selected{% endifequal %} value="SECOND_SEMESTER">Second Semester</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Current Session: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="session" required>
+                        <option {% ifequal session__semester.session 'YEAR_1' %}selected{% endifequal %} value="YEAR_1">{{ year_1 }}</option>
+                        <option {% ifequal session__semester.session 'YEAR_2' %}selected{% endifequal %} value="YEAR_2">{{ year_2 }}</option>
+                        <option {% ifequal session__semester.session 'YEAR_3' %}selected{% endifequal %} value="YEAR_3">{{ year_3 }}</option>
+                        <option {% ifequal session__semester.session 'YEAR_4' %}selected{% endifequal %} value="YEAR_4">{{ year_4 }}</option>
+                    </select>
+                </div>
+                {{ courses }}
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="col-md-9 col-sm-12"></div>
+                <div class="label col-md-3 col-sm-12">
+                    <button type="submit">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    window.onload = () => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+</script>
+{% endblock %}

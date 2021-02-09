@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<style>
+    .success_title{
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    #success_message{
+        background-color: #178a00;
+        color: #ffffff;
+        font-size: 13px;
+        position: fixed;
+        width: 300px;
+        padding: 10px;
+        top: 100px;
+        right: -500px;
+        z-index: 5;
+    }
+    #success{
+        border-top: 1px solid #ffffff62;
+        padding: 10px 20px;
+    }
+    #close{
+        font-size: 15px;
+        width: 100%;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    .login_form_control {
+        background:none;
+        border:none;
+        font-size: 13px;
+        border-bottom:2px solid #ffffff7c;
+        border-radius:0;
+        box-shadow:none;
+        outline:none;
+        color:white;
+        width: 100%;
+        line-height: 40px;
+        padding: 0px 10px;
+    }
+    .label{
+        color: white;
+        font-size: 13px;
+    }
+    select{
+        padding: 10px 20px;
+        border: none;
+        outline: none;
+        border-bottom: 2px solid #ffffff88;
+        background-color: transparent;
+        color: white;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    @media(max-width: 500px){
+        select{
+            width: 100%;
+        }
+    }
+    select option{
+        color: black;
+    }
+    button{
+        color: white;
+        background-color: #00205a;
+        border: 2px solid #ffffff88;
+        outline: none;
+        padding: 10px 30px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 200ms;
+    }
+    button:hover{
+        background-color: white;
+        color: #00205a;
+    }
+    .closeOnAcad{
+        display: none;
+    }
+    .openOnOthers{
+        display: block;
+    }
+</style>
+
+<div id="success_message" class="row">
+    <div class="col-12 row">
+        <div class="col-10 success_title">
+            <i class="far fa-check-circle mr-1"></i>Success
+        </div>
+        <div class="col-2 text-right" id="close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+    <hr>
+    <div class="col-12" id="success">{{ success }}</div>
+</div>
+
+
+<div class="main_body">
+    <div class="body_title">UPLOAD TIMETABLE</div>
+    <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="border: 1px solid #00000052; padding: 50px; border-radius: 5px; background-color: rgb(0, 32, 90);">
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    TImetable Type: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="table_type" id="tableType" required>
+                        <option selected="selected" disabled>---</option>
+                        <option value="ACADEMIC_CALENDAR">Academic Calendar</option>
+                        <option value="EXAM_TIMETABLE">Exam Timetable</option>
+                    </select>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    Session: 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <select name="session" required>
+                        <option selected="selected" disabled>---</option>
+                        <option value="YEAR_1">{{ year_1 }}</option>
+                        <option value="YEAR_2">{{ year_2 }}</option>
+                    </select>
+                </div>
+            </div>
+            <div id="closeOnAcademicCalendar">
+                <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+                <div class="form-group row">
+                    <div class="label col-md-3 col-sm-12">
+                        Semester: 
+                    </div>
+                    <div class="col-md-9 col-sm-12">
+                        <select name="semester" required>
+                            <option selected="selected" disabled>---</option>
+                            <option value="SEMESTER_1">First Semester</option>
+                            <option value="SEMESTER_2">Second Semester</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+                <div class="form-group row">
+                    <div class="label col-md-3 col-sm-12">
+                        Course: 
+                    </div>
+                    <div class="col-md-9 col-sm-12">
+                        <select name="course" required>
+                            <option selected="selected" disabled>---</option>
+                            {% for course in all_courses %}
+                            <option value="{{ course|upper }}">{{ course }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="label col-md-3 col-sm-12">
+                    File(xlsx/csv): 
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <input type="file" name="timetable_file" id="" style="overflow: hidden;" required>
+                </div>
+            </div>
+            <div style="width: 100%; border: 0.2px solid #ffffff10; margin: 15px 0;"></div>
+            <div class="form-group row">
+                <div class="col-md-9 col-sm-12"></div>
+                <div class="label col-md-3 col-sm-12">
+                    <button type="submit">Upload</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    let form_fields = document.getElementsByTagName("input")
+    for (var field in form_fields){	
+        form_fields[field].className += ' login_form_control'
+    }
+
+    // For displaying success message when there is one
+    window.onload = () => {
+        let success = document.getElementById('success')
+        let success_box = document.getElementById('success_message')
+        if(success.innerText == ''){
+            success_box.style.right = '-500px'
+        }else{
+            success_box.style.right = '10px'
+        }
+    };
+    document.getElementById('close').onclick = () => {
+        document.getElementById('success_message').style.right = '-500px'
+    }
+
+    // For removing semester and session option when academic calendar is chosen as Timetable Type
+    document.getElementById("tableType").onchange = () => {
+        let typeValue = document.getElementById("tableType").value
+        if(typeValue == "ACADEMIC_CALENDAR"){
+            document.getElementById("closeOnAcademicCalendar").className += 'closeOnAcad'
+        }
+        else if(typeValue == "EXAM_TIMETABLE"){
+            document.getElementById("closeOnAcademicCalendar").className += 'openOnOthers'
+        }
+    }
+</script>
+{% endblock %}

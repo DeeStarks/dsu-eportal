@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+{% if request.user.groups.all.0.name == 'students' %}
+<div class="main_body">
+    <div class="body_title">YOUR PROFILE</div>
+    <hr>
+    <div class="profile">
+        <div class="container">
+            <div class="row gutters-sm">
+                <div class="col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <div class="img_upload 0"><img src="{% if user_profile %}{{ user_profile.profile_pic.url }}{% else %}{% static 'images/default-user.png' %}{% endif %}" alt=""></div>
+                                <br>
+                                <div class="mt-5">
+                                    <h4 class="text-uppercase profile-name">{{ full_name }}</h4>
+                                    <p class="text-secondary mb-1">{{ user.userprofile.get_department_display }} {{ user.userprofile.get_degree_display }}</p>
+                                </div>
+                                <br>
+                                <div class="profile-below p__t">Role: <span>Student</span></div>
+                                <div class="profile-below">Status: <span>{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></div>
+                                <div class="profile-below">Registered: <span>{{ date_joined }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row pr_tl">
+                                <div class="col-sm-6 text-secondary">
+                                <i class="fas fa-graduation-cap"></i> {{ current_session }}
+                                </div>
+                                <div class="col-sm-6 text-secondary">
+                                {{ current_semester }} <i class="fas fa-cogs"></i>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Full Name</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary text-uppercase">
+                                {{ full_name }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Matric Number</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary text-uppercase">
+                                    {{ request.user }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Email</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ request.user.email }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Phone</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.phone }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Address</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.address }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Registration No.</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.reg_no }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Department</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.userprofile.get_department_display }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Faculty</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.userprofile.get_faculty_display }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Level</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user.userprofile.get_level_display }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif request.user.groups.all.0.name == 'staff' %}
+<div class="main_body">
+    <div class="body_title">YOUR PROFILE</div>
+    <hr>
+    <div class="profile">
+        <div class="container">
+            <div class="row gutters-sm">
+                <div class="col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <div class="img_upload 0"><img src="{% if user_profile %}{{ user_profile.profile_pic.url }}{% else %}{% static 'images/default-user.png' %}{% endif %}" alt=""></div>
+                                <br>
+                                <div class="mt-5">
+                                    <h4 class="text-uppercase profile-name">{{ full_name }}</h4>
+                                </div>
+                                <br>
+                                <div class="profile-below p__t">Role: <span>Lecturer</span></div>
+                                <div class="profile-below">Status: <span>Active</span></div>
+                                <div class="profile-below">Registered: <span>{{ date_joined }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row pr_tl">
+                                <div class="col-sm-6 text-secondary">
+                                <i class="fas fa-graduation-cap"></i> {{ current_session }}
+                                </div>
+                                <div class="col-sm-6 text-secondary">
+                                {{ current_semester }} <i class="fas fa-cogs"></i>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Full Name</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary text-uppercase">
+                                {{ full_name }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Username</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary text-uppercase">
+                                    {{ request.user }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Email</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ request.user.email }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Phone</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.phone }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Address</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.address }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif request.user.groups.all.0.name == 'admin' %}
+<div class="main_body">
+    <div class="body_title">YOUR PROFILE</div>
+    <hr>
+    <div class="profile">
+        <div class="container">
+            <div class="row gutters-sm">
+                <div class="col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <div class="img_upload 0"><img src="{% if user_profile %}{{ user_profile.profile_pic.url }}{% else %}{% static 'images/default-user.png' %}{% endif %}" alt=""></div>
+                                <br>
+                                <div class="mt-5">
+                                    <h4 class="profile-name">{{ full_name }}</h4>
+                                </div>
+                                <br>
+                                <div class="profile-below p__t">Role: <span>Admin</span></div>
+                                <div class="profile-below">Status: <span>Active</span></div>
+                                <div class="profile-below">Registered: <span>{{ date_joined }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row pr_tl">
+                                <div class="col-sm-6 text-secondary">
+                                <i class="fas fa-graduation-cap"></i> {{ current_session }}
+                                </div>
+                                <div class="col-sm-6 text-secondary">
+                                {{ current_semester }} <i class="fas fa-cogs"></i>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Full Name</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary text-uppercase">
+                                {{ full_name }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Username</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary text-uppercase">
+                                    {{ request.user }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Email</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ request.user.email }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Phone</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.phone }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Address</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {{ user_profile.user.email }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-7"></div>
+                                <div class="col-sm-5">
+                                    <a href="{% url 'update profile' request.user.id request.user.username %}" style="display: block;padding: 6px 10px; color: white; background-color: rgb(0, 32, 90); text-align: center;">Update Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

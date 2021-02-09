@@ -1,0 +1,169 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/icon.jpg' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <title>Mastersheet</title>
+    <style>
+        @font-face {
+            font-family: Montserrat;
+            src: url("{% static 'font/Montserrat.ttf' %}");
+        }
+
+        @font-face {
+            font-family: Dosis;
+            src: url("{% static 'font/Dosis.ttf' %}");
+        }
+
+        *{
+            box-sizing: border-box !important;
+            font-family: Montserrat;
+        }
+        body{
+            padding: 20px;
+            min-width: 1350px;
+        }
+        #brand{
+            text-decoration: none;
+        }
+
+        .brand{
+            height: 40px;
+            margin-left: -70px;
+        }
+
+        .brand .logo{
+            font-weight: bold;
+            line-height: 60px;
+            width: 70px;
+            /* border: 1px solid rgba(0, 0, 0, 0.445); */
+            background-color: rgba(0, 81, 255, 0.212);
+            border-radius: 2px;
+            box-sizing: border-box !important;
+            text-align: center;
+            font-size: 55px;
+            font-family: Dosis !important;
+            color: rgb(0, 32, 90) !important;
+            float: left;
+            margin-right: 10px;
+            transition: all 200ms !important;
+        }
+
+        .brand .logo span{
+            font-family: Dosis;
+            color: rgba(0, 32, 90, 0.576) !important;
+        }
+
+        .brand_text{
+            display: flex;
+            height: 40px;
+            align-items: center !important;
+            justify-content: center;
+        }
+
+        .brand_text div:nth-child(1){
+            float: left;
+            font-weight: 800;
+            width: 100% !important;
+            color: rgb(0, 32, 90) !important;
+            font-size: 40px;
+            line-height: 35px;
+            padding-top: 15px;
+        }
+
+        .brand_text div:nth-child(2){
+            font-weight: 600;
+            width: 100% !important;
+            font-size: 20px;
+            color: rgba(0, 32, 90, 0.576) !important;
+            letter-spacing: 13px;
+        }
+        th, td{
+            border: .5px solid #0000001f;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div style="margin: auto;">
+        <div class="col-12 d-flex justify-content-center">
+            <a href="{% url 'home' %}" id="brand"><div class="brand">
+                <div class="logo">D<span>U</span></div>
+                <div class="brand_text">
+                    <div>
+                        <div>DEESTARKS</div>
+                        <div>UNIVERSITY</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <br>
+    <hr>
+    <div class="row">
+        <div style="font-weight: 700; font-size: 20px; text-align: center;" class="col-12">
+            <div style="text-transform: uppercase;">{{ faculty }}</div>
+            <div style="text-transform: uppercase;">DEPARTMENT OF {{ department }}</div>
+            <div>{{ session }}</div>
+            <div>{{ semester }}</div>
+            <br>
+            <div style="font-size: 24px; text-decoration: underline;">RESULT MASTERSHEET</div>
+            <br>
+            <div style="font-size: 15px;">NOTE:</div>
+            <div style="font-size: 13px;">TCU - Total Course Units, GPA - Grade Point Average, CGPA - Cummulative Grade Point Average</div>
+        </div>
+    </div>
+    <div class="p-5">
+        <table class="table table-striped border" style="font-size: 13px">
+            <thead style="background-color: #000000d2; color: white; text-align: center">
+                <tr>
+                    <th scope="col">S/N</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Matric No.</th>
+                    <th scope="col">TCU</th>
+                    <th scope="col">GPA</th>
+                    <th scope="col">CGPA</th>
+                    {% for course in courses %}
+                    <th scope="col">{{ course.course_code }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #00000054; line-height: 1px !important; text-align: center;">
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    {% for course in courses %}
+                    <th scope="col">{{ course.course_unit }} unit(s)</th>
+                    {% endfor %}
+                </tr>
+                {% if courses %}
+                    {% for key, result in results.items %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td style="font-weight: 600;">{{ result.name }}</td>
+                        <td style="font-weight: 600;">{{ result.matric_no }}</td>
+                        <td style="font-weight: 600;">{{ result.total_course_unit }}</td>
+                        <td style="font-weight: 600;">{{ result.grade_point_average }}</td>
+                        <td style="font-weight: 600;">{{ result.cumm_grade_point_average }}</td>
+                        {% for grade in result.grades %}
+                        <th scope="col">{{ grade }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+            </tbody>
+        </table>
+        <div style="text-align: center; font-size: 14px; font-weight: 800; font-style: italic;">No student is in this department</div>
+        {% endif %}
+    </div>
+</body>
+</html>

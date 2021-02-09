@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+{% if request.user.groups.all.0.name == 'students' or request.user.groups.all.0.name == 'staff' %}
+<div class="main_body">
+    <div class="body_title">{{ greeting }}{{ short_name }}!</div>
+    <hr>
+    <div class="news_title">NEWS FEED FOR YOU</div>
+    <section id="gallery">
+        <div class="row">
+            {% for post in objects %}
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div style="width: 100%; max-height: 200px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img src="{{ post.thumbnail.url }}" alt="" class="card-img-top" style="position: relative; width: auto; height: 200px;">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <hr>
+                        <p class="card-text">{{ post.post|truncatechars:100 }}</p>
+                        <p class="text text-secondary m-0 p-0 pt-2"><i class="fas fa-pen-fancy" style="font-size: 12px;"></i><em class="pl-2" style="font-size: 12px;">{{ post.date }}</em></p>
+                        <hr>
+                        <a href="{% url 'post page' post.id post.title.split|join:'-'|lower %}" class="btn btn-outline-primary btn-sm">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+    </section>
+</div>
+
+{% elif request.user.groups.all.0.name == 'admin' %}
+<div class="main_body">
+    <div class="body_title">SYSTEM ADMIN DASHBOARD</div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12 col-lg-6 p-3">
+            <div class="admin_base">
+                <canvas id="adminChart01" height="250"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-6 p-3">
+            <div class="admin_base">
+                <canvas id="adminChart02" height="250"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">Registered Students</div>
+                <hr>
+                <div class="dash_cat_details">{{ students_word_count|title }}({{ students_num_count }})</div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">Registered Lecturers</div>
+                <hr>
+                <div class="dash_cat_details">{{ staff_word_count|title }}({{ staff_num_count }})</div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">Available Courses</div>
+                <hr>
+                <div class="dash_cat_details">{{ course_word_count|title }}({{ course_num_count }})</div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">Carry Over Students</div>
+                <hr>
+                <div class="dash_cat_details">{{ carryover_word_count|title }}({{ carryover_num_count }})</div>
+            </div>
+        </div>
+        <!-- <div class="col-sm-12 col-lg-4 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">1st Class Students</div>
+                <hr>
+                <div class="dash_cat_details">Not added yet</div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-4 p-3">
+            <div class="admin_base">
+                <div class="dash_cat_title">Repeating Students</div>
+                <hr>
+                <div class="dash_cat_details">Not added yet</div>
+            </div>
+        </div> -->
+    </div>
+</div>
+<script>
+    let xmlhttp = new XMLHttpRequest();
+    let jsonData = null
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            jsonData = JSON.parse(this.responseText)
+
+            let admin01 = document.getElementById("adminChart01").getContext('2d');
+            let admin02 = document.getElementById("adminChart02").getContext('2d');
+            
+            let adminChart01 = new Chart(admin01, {
+                type: 'bar',
+                data: {
+                    labels: ['100L', "200L", "300L", "400L"],
+                    datasets: [{
+                        label: 'Rate',
+                        data: [jsonData.freshman_rate, jsonData.sophomore_rate, jsonData.junior_rate, jsonData.senior_rate],
+                        backgroundColor: "#00205a30",
+                        borderWidth: 1,
+                        borderColor: "#00205a"
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Students Performance on a Scale of 1-10'
+                    },
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                beginAtZero: true,
+                                steps: 5,
+                                max: 10
+                            }
+                        }]
+                    }
+                }
+            })
+            
+            let adminChart02 = new Chart(admin02, {
+                type: 'doughnut',
+                data: {
+                    labels: ["100L", "200L", "300L", "400L"],
+                    datasets: [{
+                        label: 'Percentage',
+                        data: [jsonData.freshman_percentage, jsonData.sophomore_percentage, jsonData.junior_percentage, jsonData.senior_percentage],
+                        backgroundColor: [
+                            "#00205a",
+                            '#00ff1e',
+                            '#ff6347',
+                            "#ff7b00"
+                        ],
+                        hoverOffset: 4,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Students Performance by Percentage'
+                    }
+                }
+            })
+        }
+    };
+
+    xmlhttp.open("GET", "{% static 'admin_chart.json' %}", true);
+    xmlhttp.send();
+
+    // console.log(JSON.parse(jsonData))
+    
+    // window.onload = function(){
+        
+    // }
+
+</script>
+{% endif %}
+
+{% endblock %}

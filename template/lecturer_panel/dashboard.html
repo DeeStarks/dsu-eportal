@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<div class="main_body">
+    <div class="body_title">WELCOME BACK <span><em>{{ request.user }}</em></span></div>
+    <hr>
+    <div class="news_title">NEWS FEED FOR YOU</div>
+    <section id="gallery">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <img src="{% static 'images/section01.jpg' %}" alt="" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Welcome back to school</h5>
+                        <hr>
+                        <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut eum similique repellat a laborum, rerum voluptates ipsam eos quo tempore iusto dolore modi dolorum in pariatur. Incidunt repellendus praesentium quae!</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                        <a href="#" class="btn btn-outline-danger btn-sm"><i class="far fa-heart"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <img src="{% static 'images/section02.jpg' %}" alt="" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Matriculation 2020</h5>
+                        <hr>
+                        <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut eum similique repellat a laborum, rerum voluptates ipsam eos quo tempore iusto dolore modi dolorum in pariatur. Incidunt repellendus praesentium quae!</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                        <a href="#" class="btn btn-outline-danger btn-sm"><i class="far fa-heart"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <img src="{% static 'images/section03.jpg' %}" alt="" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Timetable updated</h5>
+                        <hr>
+                        <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut eum similique repellat a laborum, rerum voluptates ipsam eos quo tempore iusto dolore modi dolorum in pariatur. Incidunt repellendus praesentium quae!</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                        <a href="#" class="btn btn-outline-danger btn-sm"><i class="far fa-heart"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

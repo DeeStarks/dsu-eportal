@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<div class="main_body library">
+    <div class="body_title">DIGITAL LIBRARY</div>
+    <hr>
+    <div class="row">
+        {% for book in objects %}
+            <div class="col-md-3 col-sm-6 p-3">
+                <div class="bg-light" style="box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.281); overflow: hidden;">
+                    <a href="{{ book.file.url }}" target="_blank" download>
+                        <img src="{{ book.thumbnail.url }}" alt="" width="100%">
+                    </a>
+                    <hr>
+                    <div style="text-transform: uppercase; color: rgb(26, 26, 26); text-align: center; font-weight: 600;">{{ book.filename }}</div>
+                    <hr>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
